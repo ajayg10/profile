@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================================================
+   BASE LAYER
+   ================================================ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #0A0E14;
+    color: #E2E8F0;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(0, 217, 255, 0.2);
+    color: #00D9FF;
+  }
+
+  /* Focus states for keyboard navigation */
+  :focus-visible {
+    outline: 2px solid #00D9FF;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0A0E14;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #242D3D;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #8B5CF6;
+  }
+}
+
+/* ================================================
+   COMPONENT LAYER
+   ================================================ */
+@layer components {
+  /* Glass surfaces — only on elevated elements */
+  .glass-surface {
+    background: rgba(22, 28, 40, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .glass-nav {
+    background: rgba(10, 14, 20, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Project card glow border */
+  .glow-border {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, transparent, transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease, background 0.4s ease;
+    pointer-events: none;
+  }
+
+  .glow-border:hover,
+  .glow-border:focus-within {
+    border-color: rgba(0, 217, 255, 0.3);
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.08), 0 8px 32px rgba(0, 0, 0, 0.3);
+    transform: translateY(-4px);
+  }
+
+  .glow-border:hover::before,
+  .glow-border:focus-within::before {
+    opacity: 1;
+    background: linear-gradient(135deg, #00D9FF, #8B5CF6, #00D9FF);
+  }
+
+  /* Section container */
+  .section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* Tech badge */
+  .tech-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #94A3B8;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
+  }
+
+  .tech-badge:hover {
+    color: #00D9FF;
+    border-color: rgba(0, 217, 255, 0.3);
+    background: rgba(0, 217, 255, 0.06);
+  }
+
+  /* Subtle Tech Grid Background for Hero */
+  .cyber-grid-overlay {
+    background-image: 
+      radial-gradient(circle at center, rgba(10, 14, 20, 0.3) 20%, #0A0E14 95%),
+      linear-gradient(rgba(0, 217, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 217, 255, 0.015) 1px, transparent 1px);
+    background-size: 100%, 60px 60px, 60px 60px;
+    background-position: center center;
+  }
+}
+
+/* ================================================
+   REDUCED MOTION
+   ================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
