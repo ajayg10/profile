@@ -19,7 +19,7 @@ I also co-authored research on self-healing cloud infrastructure, combining auto
 
     timeline: [
       {
-        year: "2025",
+        year: "2023",
         title: "CSE (Cloud Computing) @ SRMIST",
         description: "Started B.Tech with a focus on distributed systems and cloud architecture. CGPA 8.58.",
       },
@@ -29,12 +29,12 @@ I also co-authored research on self-healing cloud infrastructure, combining auto
         description: "Built production-style systems: JWT auth with hashed single-use refresh tokens, real-time video (Agora SDK), PostgreSQL schemas.",
       },
       {
-        year: "2024",
+        year: "2025",
         title: "AI/LLM Integration",
         description: "Built an autonomous email agent using LangChain + Gmail API (OAuth 2.0) — summarization, categorization, and reply drafting without human intervention.",
       },
       {
-        year: "2025",
+        year: "2026",
         title: "VEDA — Multi-Service Agentic Architecture",
         description: "Designed a microservice-based agentic AI system: Orchestrator, Planner, Memory (FAISS), Executor — each containerized, communicating via internal APIs, deployed with CI/CD.",
       },
