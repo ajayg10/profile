@@ -3,32 +3,55 @@ import { useRef } from 'react';
 import { Server, Brain, Cloud, Code2 } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
 
-const categoryIcons = {
-  'Backend': Server,
-  'AI & Agentic Systems': Brain,
-  'Cloud & DevOps': Cloud,
-  'Languages': Code2,
-};
+const categories = [
+  {
+    num: '01',
+    key: 'Backend',
+    icon: Server,
+    color: '#00D9FF',
+    colorRgb: '0,217,255',
+    description: 'APIs, auth systems & data persistence',
+  },
+  {
+    num: '02',
+    key: 'AI & Agentic Systems',
+    icon: Brain,
+    color: '#8B5CF6',
+    colorRgb: '139,92,246',
+    description: 'LLM pipelines, vector memory & agents',
+  },
+  {
+    num: '03',
+    key: 'Cloud & DevOps',
+    icon: Cloud,
+    color: '#00D9FF',
+    colorRgb: '0,217,255',
+    description: 'Containers, CI/CD & observability',
+  },
+  {
+    num: '04',
+    key: 'Languages',
+    icon: Code2,
+    color: '#8B5CF6',
+    colorRgb: '139,92,246',
+    description: 'Production-grade programming languages',
+  },
+];
 
-const categoryColors = {
-  'Backend': 'cyan',
-  'AI & Agentic Systems': 'violet',
-  'Cloud & DevOps': 'cyan',
-  'Languages': 'violet',
-};
+const STATS = [
+  { value: '25+', label: 'Technologies' },
+  { value: '4', label: 'Languages' },
+  { value: '3+', label: 'Years Building' },
+  { value: '4', label: 'Major Projects' },
+];
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
-};
-
-const staggerContainer = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.04 } },
+  hidden: { opacity: 0, y: 32 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const scaleIn = {
-  hidden: { opacity: 0, scale: 0.85 },
+  hidden: { opacity: 0, scale: 0.75 },
   show: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } },
 };
 
@@ -37,80 +60,140 @@ export default function SkillsSection({ profile }) {
   const isInView = useInView(sectionRef, { once: true, margin: '-80px' });
   const reducedMotion = useReducedMotion();
 
-  const categories = Object.entries(profile.skills);
+  const skills = profile.skills;
 
   return (
-    <section id="skills" ref={sectionRef} className="relative py-24 md:py-32">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+    <section id="skills" ref={sectionRef} className="relative py-24 md:py-32 overflow-hidden">
+      <div className="section-divider absolute top-0 left-0 right-0" />
 
-      <div className="section-container">
-        {/* Section heading */}
+      {/* Ambient glow */}
+      <div
+        className="absolute right-[-10%] top-1/3 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 65%)',
+          filter: 'blur(80px)',
+        }}
+      />
+      <div
+        className="absolute left-[-5%] bottom-1/4 w-[400px] h-[400px] rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(0,217,255,0.07) 0%, transparent 65%)',
+          filter: 'blur(70px)',
+        }}
+      />
+
+      <div className="section-container relative z-10">
+        {/* Heading */}
         <motion.div
           variants={reducedMotion ? {} : fadeUp}
           initial={reducedMotion ? 'show' : 'hidden'}
           animate={isInView ? 'show' : 'hidden'}
-          className="mb-14"
+          className="mb-16"
         >
-          <p className="font-inter text-body-sm text-cyan font-medium tracking-wider uppercase mb-3">
-            Skills
-          </p>
-          <h2 className="font-satoshi text-display-md text-white mb-4 max-sm:text-display-sm">
-            Tools & Technologies
+          <span className="section-label">Skills</span>
+          <h2 className="font-syne font-extrabold text-white mb-5 tracking-tight"
+              style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', letterSpacing: '-0.025em' }}>
+            Tools &amp; Technologies
           </h2>
-          <div className="w-16 h-[2px] bg-gradient-to-r from-cyan to-violet rounded-full" />
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-[2px] bg-gradient-to-r from-cyan to-violet rounded-full" />
+            <p className="font-inter text-sm text-gray-500">
+              The stack powering production systems
+            </p>
+          </div>
         </motion.div>
 
-        {/* Skill categories grid */}
-        <div className="grid sm:grid-cols-2 gap-6">
-          {categories.map(([category, skills], catIndex) => {
-            const Icon = categoryIcons[category] || Code2;
-            const accent = categoryColors[category] || 'cyan';
-
-            const hoverClass = accent === 'cyan'
-              ? 'hover:bg-white/[0.04] hover:border-cyan/20 hover:shadow-[0_0_30px_rgba(0,217,255,0.04)]'
-              : 'hover:bg-white/[0.04] hover:border-violet/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.04)]';
-
+        {/* Numbered skill cards grid */}
+        <div className="grid sm:grid-cols-2 gap-5 mb-14">
+          {categories.map((cat, catIdx) => {
+            const Icon = cat.icon;
+            const catSkills = skills[cat.key] || [];
             return (
               <motion.div
-                key={category}
+                key={cat.key}
                 variants={reducedMotion ? {} : fadeUp}
                 initial={reducedMotion ? 'show' : 'hidden'}
                 animate={isInView ? 'show' : 'hidden'}
-                transition={{ delay: catIndex * 0.1 }}
-                className={`glass-surface rounded-2xl p-6 transition-all duration-300 ${hoverClass}`}
+                transition={{ delay: catIdx * 0.12 }}
+                className="skill-number-card group p-6"
+                style={{
+                  '--card-color': cat.color,
+                  '--card-color-rgb': cat.colorRgb,
+                }}
               >
-                {/* Category header */}
-                <div className="flex items-center gap-3 mb-5">
-                  <div className={`p-2 rounded-lg ${
-                    accent === 'cyan'
-                      ? 'bg-cyan/10 text-cyan'
-                      : 'bg-violet/10 text-violet'
-                  }`}>
-                    <Icon size={20} />
+                {/* Card inner */}
+                <div className="flex items-start justify-between mb-5">
+                  {/* Big number */}
+                  <span
+                    className="font-syne font-black leading-none select-none"
+                    style={{
+                      fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
+                      color: cat.color,
+                      opacity: 0.12,
+                      letterSpacing: '-0.05em',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {cat.num}
+                  </span>
+                  {/* Icon */}
+                  <div
+                    className="p-2.5 rounded-xl transition-all duration-300 group-hover:scale-110"
+                    style={{
+                      background: `${cat.color}12`,
+                      border: `1px solid ${cat.color}25`,
+                    }}
+                  >
+                    <Icon size={20} style={{ color: cat.color }} />
                   </div>
-                  <h3 className="font-satoshi text-heading-sm text-white">
-                    {category}
-                  </h3>
                 </div>
 
-                {/* Skill badges */}
+                {/* Category name */}
+                <h3 className="font-syne font-bold text-white text-lg mb-1 tracking-tight">
+                  {cat.key}
+                </h3>
+                <p className="font-mono text-[0.65rem] text-gray-600 tracking-wider uppercase mb-5">
+                  {cat.description}
+                </p>
+
+                {/* Glowing neon underline */}
+                <div
+                  className="w-full h-px mb-5 opacity-30"
+                  style={{ background: `linear-gradient(90deg, ${cat.color}, transparent)` }}
+                />
+
+                {/* Skill pills */}
                 <motion.div
-                  variants={reducedMotion ? {} : staggerContainer}
+                  variants={reducedMotion ? {} : { hidden: {}, show: { transition: { staggerChildren: 0.04 } } }}
                   initial={reducedMotion ? 'show' : 'hidden'}
                   animate={isInView ? 'show' : 'hidden'}
                   className="flex flex-wrap gap-2"
                 >
-                  {skills.map((skill) => (
+                  {catSkills.map((skill) => (
                     <motion.span
                       key={skill}
                       variants={reducedMotion ? {} : scaleIn}
-                      className={`inline-flex items-center px-3 py-1.5 text-body-xs font-inter font-medium
-                        rounded-lg border transition-colors duration-200
-                        ${accent === 'cyan'
-                          ? 'text-gray-300 bg-cyan/5 border-cyan/10 hover:border-cyan/30 hover:text-cyan'
-                          : 'text-gray-300 bg-violet/5 border-violet/10 hover:border-violet/30 hover:text-violet'
-                        }
-                      `}
+                      className="inline-flex items-center px-3 py-1.5 font-mono text-xs font-medium
+                                 rounded-lg border transition-all duration-250 cursor-default"
+                      style={{
+                        color: '#94A3B8',
+                        background: `${cat.color}06`,
+                        borderColor: `${cat.color}18`,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = cat.color;
+                        e.currentTarget.style.borderColor = `${cat.color}50`;
+                        e.currentTarget.style.background = `${cat.color}12`;
+                        e.currentTarget.style.boxShadow = `0 0 12px ${cat.color}20`;
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = '#94A3B8';
+                        e.currentTarget.style.borderColor = `${cat.color}18`;
+                        e.currentTarget.style.background = `${cat.color}06`;
+                        e.currentTarget.style.boxShadow = 'none';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
                     >
                       {skill}
                     </motion.span>
@@ -120,6 +203,44 @@ export default function SkillsSection({ profile }) {
             );
           })}
         </div>
+
+        {/* Bottom stats bar */}
+        <motion.div
+          variants={reducedMotion ? {} : fadeUp}
+          initial={reducedMotion ? 'show' : 'hidden'}
+          animate={isInView ? 'show' : 'hidden'}
+          transition={{ delay: 0.5 }}
+        >
+          <div
+            className="rounded-2xl px-8 py-6 grid grid-cols-2 sm:grid-cols-4 gap-6 backdrop-blur-sm"
+            style={{
+              background: 'rgba(14,22,38,0.65)',
+              border: '1px solid rgba(0,217,255,0.1)',
+              boxShadow: '0 0 40px rgba(0,217,255,0.04)',
+            }}
+          >
+            {STATS.map((stat, i) => (
+              <div key={i} className="text-center group">
+                <div
+                  className="font-syne font-black text-3xl mb-1 transition-all duration-300 group-hover:scale-110"
+                  style={{
+                    background: i % 2 === 0
+                      ? 'linear-gradient(135deg, #00D9FF, #33E5FF)'
+                      : 'linear-gradient(135deg, #8B5CF6, #A78BFA)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  {stat.value}
+                </div>
+                <div className="font-mono text-[0.65rem] text-gray-600 tracking-widest uppercase">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

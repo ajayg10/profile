@@ -1,46 +1,54 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { Mail, Code } from 'lucide-react';
+import { Mail, ArrowUpRight, MessageSquare } from 'lucide-react';
 import { GithubIcon, LinkedinIcon, LeetCodeIcon } from './icons';
 import useReducedMotion from '../hooks/useReducedMotion';
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 32 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const contactLinks = [
   {
     key: 'email',
     label: 'Email',
+    description: 'Preferred intro channel',
     IconComponent: Mail,
-    isLucide: true,
-    getHref: (social) => `mailto:${social.email}`,
-    getValue: (social) => social.email,
+    getHref: (s) => `mailto:${s.email}`,
+    getValue: (s) => s.email,
+    color: '#00D9FF',
+    colorRgb: '0,217,255',
   },
   {
     key: 'github',
     label: 'GitHub',
+    description: 'Open source contributions',
     IconComponent: GithubIcon,
-    isLucide: false,
-    getHref: (social) => social.github,
+    getHref: (s) => s.github,
     getValue: () => 'ajayg10',
+    color: '#8B5CF6',
+    colorRgb: '139,92,246',
   },
   {
     key: 'linkedin',
     label: 'LinkedIn',
+    description: 'Professional network',
     IconComponent: LinkedinIcon,
-    isLucide: false,
-    getHref: (social) => social.linkedin,
+    getHref: (s) => s.linkedin,
     getValue: () => 'ajayg10',
+    color: '#00D9FF',
+    colorRgb: '0,217,255',
   },
   {
     key: 'leetcode',
     label: 'LeetCode',
+    description: 'Problem solving',
     IconComponent: LeetCodeIcon,
-    isLucide: false,
-    getHref: (social) => social.leetcode,
+    getHref: (s) => s.leetcode,
     getValue: () => 'Ajay-10',
+    color: '#8B5CF6',
+    colorRgb: '139,92,246',
   },
 ];
 
@@ -50,24 +58,47 @@ export default function ContactSection({ profile }) {
   const reducedMotion = useReducedMotion();
 
   return (
-    <section id="contact" ref={sectionRef} className="relative py-24 md:py-32">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+    <section id="contact" ref={sectionRef} className="relative py-24 md:py-32 overflow-hidden">
+      <div className="section-divider absolute top-0 left-0 right-0" />
 
-      <div className="section-container">
-        {/* Section heading */}
+      {/* Background glow */}
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        style={{ zIndex: 0 }}
+      >
+        <div
+          className="w-[700px] h-[700px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(0,217,255,0.065) 0%, rgba(139,92,246,0.045) 40%, transparent 70%)',
+            filter: 'blur(80px)',
+          }}
+        />
+      </div>
+
+      <div className="section-container relative z-10">
+        {/* Heading */}
         <motion.div
           variants={reducedMotion ? {} : fadeUp}
           initial={reducedMotion ? 'show' : 'hidden'}
           animate={isInView ? 'show' : 'hidden'}
           className="mb-14 text-center"
         >
-          <p className="font-inter text-body-sm text-cyan font-medium tracking-wider uppercase mb-3">
-            Contact
-          </p>
-          <h2 className="font-satoshi text-display-md text-white mb-4 max-sm:text-display-sm">
-            Get in Touch
+          <span className="section-label block text-center">Contact</span>
+          <h2
+            className="font-syne font-extrabold text-white mb-6 tracking-tight"
+            style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', letterSpacing: '-0.025em' }}
+          >
+            Let's Build Something
           </h2>
-          <div className="w-16 h-[2px] bg-gradient-to-r from-cyan to-violet rounded-full mx-auto" />
+          {/* Triple gradient divider */}
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="h-[2px] w-16 rounded-full bg-gradient-to-r from-transparent to-cyan" />
+            <div className="h-[2px] w-6 rounded-full bg-gradient-to-r from-cyan to-violet" />
+            <div className="h-[2px] w-16 rounded-full bg-gradient-to-r from-violet to-transparent" />
+          </div>
+          <p className="font-inter text-gray-500 text-sm max-w-md mx-auto">
+            Building something interesting or want to talk systems architecture?
+          </p>
         </motion.div>
 
         {/* Contact card */}
@@ -75,43 +106,97 @@ export default function ContactSection({ profile }) {
           variants={reducedMotion ? {} : fadeUp}
           initial={reducedMotion ? 'show' : 'hidden'}
           animate={isInView ? 'show' : 'hidden'}
+          transition={{ delay: 0.1 }}
           className="max-w-2xl mx-auto"
         >
-          <div className="glass-surface rounded-2xl p-8 md:p-10">
-            <p className="font-inter text-body-md text-gray-400 text-center mb-8">
-              Building something interesting or want to talk systems architecture?
-              Reach out through any of these.
-            </p>
+          <div
+            className="rounded-2xl p-8 md:p-10 relative overflow-hidden backdrop-blur-xl"
+            style={{
+              background: 'rgba(12,18,32,0.8)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              boxShadow: '0 0 60px rgba(0,217,255,0.04), 0 20px 60px rgba(0,0,0,0.4)',
+            }}
+          >
+            {/* Corner decoration */}
+            <div className="absolute top-4 right-5 flex gap-1.5" aria-hidden="true">
+              <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#00D9FF', opacity: 0.4, boxShadow: '0 0 6px rgba(0,217,255,0.6)' }} />
+              <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#8B5CF6', opacity: 0.4, boxShadow: '0 0 6px rgba(139,92,246,0.6)' }} />
+              <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.2)' }} />
+            </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              {contactLinks.map((link) => {
+            {/* Response time hint */}
+            <div className="flex items-center justify-center gap-2 mb-7">
+              <MessageSquare size={14} className="text-gray-600" />
+              <p className="font-mono text-xs text-gray-600 tracking-wider">
+                Typically responds within 24 hours
+              </p>
+            </div>
+
+            {/* Links grid */}
+            <div className="grid sm:grid-cols-2 gap-3">
+              {contactLinks.map((link, i) => {
                 const Icon = link.IconComponent;
                 return (
-                  <a
+                  <motion.a
                     key={link.key}
+                    id={`contact-${link.key}`}
                     href={link.getHref(profile.social)}
                     target={link.key === 'email' ? undefined : '_blank'}
                     rel={link.key === 'email' ? undefined : 'noopener noreferrer'}
-                    className="flex items-center gap-4 p-4 rounded-xl border border-white/5
-                               hover:border-cyan/20 hover:bg-base-200/30 transition-all duration-200 group
-                               focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan"
+                    initial={reducedMotion ? {} : { opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: 0.25 + i * 0.09 }}
+                    className="flex items-center gap-3.5 p-4 rounded-xl transition-all duration-300 group"
+                    style={{
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      background: 'rgba(255,255,255,0.02)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = `rgba(${link.colorRgb},0.3)`;
+                      e.currentTarget.style.background = `rgba(${link.colorRgb},0.07)`;
+                      e.currentTarget.style.boxShadow = `0 0 24px rgba(${link.colorRgb},0.08)`;
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                      e.currentTarget.style.boxShadow = 'none';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
                   >
-                    <div className="p-2.5 rounded-lg bg-base-200 group-hover:bg-cyan/10 transition-colors">
-                      {link.isLucide ? (
-                        <Icon size={20} className="text-gray-500 group-hover:text-cyan transition-colors" />
-                      ) : (
-                        <Icon size={20} className="text-gray-500 group-hover:text-cyan transition-colors" />
-                      )}
+                    {/* Icon */}
+                    <div
+                      className="p-2.5 rounded-xl flex-shrink-0 transition-all duration-300"
+                      style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                      }}
+                    >
+                      <Icon
+                        size={17}
+                        className="transition-colors duration-300"
+                        style={{ color: '#6B7280' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.color = link.color; }}
+                      />
                     </div>
-                    <div>
-                      <p className="font-inter text-body-xs text-gray-500">
+
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-mono text-[0.62rem] text-gray-600 tracking-[0.15em] uppercase mb-0.5">
                         {link.label}
                       </p>
-                      <p className="font-inter text-body-sm text-gray-300 group-hover:text-white transition-colors">
+                      <p className="font-inter text-sm font-medium text-gray-300 truncate">
                         {link.getValue(profile.social)}
                       </p>
                     </div>
-                  </a>
+
+                    {/* Arrow */}
+                    <ArrowUpRight
+                      size={14}
+                      style={{ color: link.color, opacity: 0.5 }}
+                      className="flex-shrink-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    />
+                  </motion.a>
                 );
               })}
             </div>
