@@ -1,226 +1,170 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
 import profile from '../data/profile';
 
 const navItems = [
-  { id: 'about', label: 'About' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'github', label: 'GitHub' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'hero',     label: '01. Intro' },
+  { id: 'about',    label: '02. About' },
+  { id: 'projects', label: '03. Projects' },
+  { id: 'contact',  label: '04. Contact' },
 ];
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeSection, setActiveSection] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [active, setActive] = useState('hero');
 
   useEffect(() => {
-    const handleScroll = () => {
-      const winScroll = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(docHeight > 0 ? (winScroll / docHeight) * 100 : 0);
-      setScrolled(winScroll > 50);
+    const onScroll = () => {
+      const winY = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(docH > 0 ? (winY / docH) * 100 : 0);
+      setScrolled(winY > 30);
 
-      const sections = ['contact', 'github', 'skills', 'projects', 'about', 'hero'];
-      for (const id of sections) {
+      const ids = ['contact', 'projects', 'about', 'hero'];
+      for (const id of ids) {
         const el = document.getElementById(id);
         if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 120 && rect.bottom > 120) {
-            setActiveSection(id === 'hero' ? '' : id);
-            break;
-          }
+          const r = el.getBoundingClientRect();
+          if (r.top <= 200 && r.bottom > 100) { setActive(id); break; }
         }
       }
     };
-
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [isMenuOpen]);
+  }, [menuOpen]);
 
-  const scrollTo = (id) => {
+  const go = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setIsMenuOpen(false);
+    setMenuOpen(false);
   };
 
   return (
     <>
-      <nav
-        aria-label="Primary navigation"
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled ? 'glass-nav shadow-2xl shadow-black/40' : 'bg-transparent'
-        }`}
-      >
-        <div className="section-container flex items-center justify-between h-16">
-          {/* Logo */}
+      <header className="fixed top-0 left-0 right-0 z-50 pt-3 md:pt-5 px-4 pointer-events-none">
+        <div className="site-container flex items-center justify-between">
+          
+          {/* Logo Pill */}
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="font-syne font-extrabold text-xl text-white hover:text-cyan transition-colors tracking-tight group"
-            aria-label="Scroll to top"
+            className="pointer-events-auto group px-4 py-2 bg-white/90 backdrop-blur-md border border-[#EAE3DC] rounded-full shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-2"
+            aria-label="Top"
           >
-            <span className="group-hover:opacity-80 transition-opacity">AG</span>
-            <span
-              className="text-cyan transition-all duration-300 group-hover:text-shadow-cyan"
-              style={{ textShadow: '0 0 12px rgba(0,217,255,0.6)' }}
-            >
-              .
+            <span className="font-jakarta font-extrabold text-sm text-[#1C1A19] tracking-tight">
+              AJAY GARG
             </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C86D51] group-hover:scale-125 transition-transform" />
           </button>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-1" role="menubar">
-            {navItems.map((navItem) => (
-              <button
-                key={navItem.id}
-                id={`nav-${navItem.id}`}
-                onClick={() => scrollTo(navItem.id)}
-                role="menuitem"
-                aria-current={activeSection === navItem.id ? 'true' : undefined}
-                className="relative px-4 py-2 font-inter text-sm font-medium rounded-lg transition-all duration-200
-                           focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan"
-                style={{
-                  color: activeSection === navItem.id ? '#00D9FF' : '#94A3B8',
-                }}
-                onMouseEnter={(e) => {
-                  if (activeSection !== navItem.id) e.currentTarget.style.color = '#ffffff';
-                }}
-                onMouseLeave={(e) => {
-                  if (activeSection !== navItem.id) e.currentTarget.style.color = '#94A3B8';
-                }}
-              >
-                {navItem.label}
-                {/* Animated active indicator */}
-                {activeSection === navItem.id && (
-                  <motion.div
-                    layoutId="nav-pill"
-                    className="absolute inset-0 rounded-lg"
-                    style={{
-                      background: 'rgba(0,217,255,0.08)',
-                      border: '1px solid rgba(0,217,255,0.22)',
-                      boxShadow: '0 0 12px rgba(0,217,255,0.1)',
-                    }}
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
-                  />
-                )}
-                <span className="relative z-10" />
-              </button>
-            ))}
+          {/* Floating Pill Nav for Desktop */}
+          <nav
+            aria-label="Primary navigation"
+            className={`pointer-events-auto hidden md:flex items-center gap-1 px-3 py-1.5 bg-white/90 backdrop-blur-md border border-[#EAE3DC] rounded-full transition-all duration-300 ${
+              scrolled ? 'shadow-md border-[#D5CBC0]' : 'shadow-sm'
+            }`}
+          >
+            {navItems.map((item) => {
+              const isActive = active === item.id;
+              return (
+                <button
+                  key={item.id}
+                  id={`nav-${item.id}`}
+                  onClick={() => go(item.id)}
+                  className="relative px-4 py-1.5 font-mono text-[0.76rem] font-semibold transition-colors duration-200 rounded-full"
+                  style={{ color: isActive ? '#1C1A19' : '#7E7771' }}
+                >
+                  {item.label}
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-pill-active"
+                      className="absolute inset-0 bg-[#F3EEEA] rounded-full -z-10 border border-[#EAE3DC]"
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
 
-            {/* Resume button */}
             {profile.resumeUrl && (
               <a
                 href={profile.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 id="nav-resume"
-                className="ml-3 px-4 py-2 font-syne text-sm font-bold rounded-lg
-                           transition-all duration-300 group relative overflow-hidden"
-                style={{
-                  color: '#00D9FF',
-                  border: '1px solid rgba(0,217,255,0.28)',
-                  background: 'rgba(0,217,255,0.06)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(0,217,255,0.14)';
-                  e.currentTarget.style.borderColor = 'rgba(0,217,255,0.55)';
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(0,217,255,0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(0,217,255,0.06)';
-                  e.currentTarget.style.borderColor = 'rgba(0,217,255,0.28)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
+                className="ml-2 px-3.5 py-1.5 font-jakarta text-[0.76rem] font-bold rounded-full transition-all duration-200
+                           text-[#C86D51] bg-[#FDF2EE] border border-rgba(200,109,81,0.2) hover:bg-[#C86D51] hover:text-white flex items-center gap-1"
               >
                 Resume
+                <ArrowUpRight size={12} />
               </a>
             )}
-          </div>
+          </nav>
 
-          {/* Mobile toggle */}
+          {/* Mobile Menu Toggle Pill */}
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isMenuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="pointer-events-auto md:hidden p-2.5 bg-white/90 backdrop-blur-md border border-[#EAE3DC] rounded-full text-[#1C1A19] shadow-sm"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
-            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
 
         {/* Scroll progress bar */}
-        <div
-          className="absolute bottom-0 left-0 h-[1.5px] transition-all duration-100"
-          style={{
-            width: `${scrollProgress}%`,
-            background: 'linear-gradient(90deg, #00D9FF, #8B5CF6)',
-            boxShadow: '0 0 8px rgba(0,217,255,0.6)',
-          }}
-        />
-      </nav>
+        <div className="absolute top-0 left-0 right-0 h-1 bg-transparent">
+          <div
+            className="h-full bg-[#C86D51] transition-all duration-100"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </header>
 
-      {/* Mobile menu */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
-        {isMenuOpen && (
+        {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            animate={{ opacity: 1, backdropFilter: 'blur(28px)' }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden fixed inset-0 top-16 z-40"
-            style={{ background: 'rgba(8,12,20,0.92)' }}
-            role="dialog"
-            aria-modal="true"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25 }}
+            className="md:hidden fixed inset-0 top-16 z-40 bg-[#FBF9F6]/95 backdrop-blur-xl px-6 pt-10"
           >
-            {/* Ambient blobs */}
-            <div className="absolute top-10 left-10 w-64 h-64 rounded-full pointer-events-none opacity-20"
-              style={{ background: 'radial-gradient(circle, rgba(0,217,255,0.4) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-            <div className="absolute bottom-20 right-10 w-64 h-64 rounded-full pointer-events-none opacity-15"
-              style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-
-            <div className="relative flex flex-col items-center justify-center gap-2 px-8 pt-8 pb-16 h-full">
-              {navItems.map((navItem, i) => (
+            <div className="flex flex-col gap-4 max-w-sm mx-auto">
+              {navItems.map((item, i) => (
                 <motion.button
-                  key={navItem.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                  onClick={() => scrollTo(navItem.id)}
-                  className="w-full text-center px-6 py-4 font-syne font-semibold text-xl rounded-2xl transition-all duration-200"
-                  style={{
-                    color: activeSection === navItem.id ? '#00D9FF' : '#CBD5E1',
-                    background: activeSection === navItem.id ? 'rgba(0,217,255,0.08)' : 'transparent',
-                    border: activeSection === navItem.id ? '1px solid rgba(0,217,255,0.2)' : '1px solid transparent',
-                  }}
+                  key={item.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  onClick={() => go(item.id)}
+                  className="w-full text-left py-3.5 px-5 font-jakarta font-bold text-lg text-[#1C1A19] bg-white border border-[#EAE3DC] rounded-xl flex items-center justify-between shadow-sm"
                 >
-                  {navItem.label}
+                  <span>{item.label}</span>
+                  <span className="w-2 h-2 rounded-full bg-[#C86D51]" />
                 </motion.button>
               ))}
+
               {profile.resumeUrl && (
                 <motion.a
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: navItems.length * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: navItems.length * 0.05 }}
                   href={profile.resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 w-full text-center px-6 py-4 font-syne font-bold text-xl rounded-2xl"
-                  style={{
-                    background: 'linear-gradient(135deg, #00D9FF, #8B5CF6)',
-                    color: 'white',
-                    boxShadow: '0 0 30px rgba(0,217,255,0.3)',
-                  }}
-                  onClick={() => setIsMenuOpen(false)}
+                  className="mt-4 w-full py-4 text-center font-jakarta font-bold text-base text-white bg-[#C86D51] rounded-xl shadow-md flex items-center justify-center gap-2"
+                  onClick={() => setMenuOpen(false)}
                 >
-                  Resume
+                  <span>Download Resume</span>
+                  <ArrowUpRight size={16} />
                 </motion.a>
               )}
             </div>

@@ -1,207 +1,99 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { Mail, ArrowUpRight, MessageSquare } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Mail, ArrowUpRight, Copy, Check, Send } from 'lucide-react';
 import { GithubIcon, LinkedinIcon, LeetCodeIcon } from './icons';
-import useReducedMotion from '../hooks/useReducedMotion';
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-};
-
-const contactLinks = [
-  {
-    key: 'email',
-    label: 'Email',
-    description: 'Preferred intro channel',
-    IconComponent: Mail,
-    getHref: (s) => `mailto:${s.email}`,
-    getValue: (s) => s.email,
-    color: '#00D9FF',
-    colorRgb: '0,217,255',
-  },
-  {
-    key: 'github',
-    label: 'GitHub',
-    description: 'Open source contributions',
-    IconComponent: GithubIcon,
-    getHref: (s) => s.github,
-    getValue: () => 'ajayg10',
-    color: '#8B5CF6',
-    colorRgb: '139,92,246',
-  },
-  {
-    key: 'linkedin',
-    label: 'LinkedIn',
-    description: 'Professional network',
-    IconComponent: LinkedinIcon,
-    getHref: (s) => s.linkedin,
-    getValue: () => 'ajayg10',
-    color: '#00D9FF',
-    colorRgb: '0,217,255',
-  },
-  {
-    key: 'leetcode',
-    label: 'LeetCode',
-    description: 'Problem solving',
-    IconComponent: LeetCodeIcon,
-    getHref: (s) => s.leetcode,
-    getValue: () => 'Ajay-10',
-    color: '#8B5CF6',
-    colorRgb: '139,92,246',
-  },
+const links = [
+  { key: 'email',    label: 'Email',    sub: 'Direct Email',          Icon: Mail,        href: s => `mailto:${s.email}`,    val: s => s.email },
+  { key: 'github',   label: 'GitHub',   sub: 'Open Source Repos',     Icon: GithubIcon,  href: s => s.github,               val: () => 'github.com/ajayg10' },
+  { key: 'linkedin', label: 'LinkedIn', sub: 'Professional Network',  Icon: LinkedinIcon,href: s => s.linkedin,             val: () => 'linkedin.com/in/ajayg10' },
+  { key: 'leetcode', label: 'LeetCode', sub: 'Algorithmic Practice',   Icon: LeetCodeIcon,href: s => s.leetcode,             val: () => 'leetcode.com/Ajay-10' },
 ];
 
 export default function ContactSection({ profile }) {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: '-80px' });
-  const reducedMotion = useReducedMotion();
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText(profile.social.email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <section id="contact" ref={sectionRef} className="relative py-24 md:py-32 overflow-hidden">
-      <div className="section-divider absolute top-0 left-0 right-0" />
-
-      {/* Background glow */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ zIndex: 0 }}
-      >
-        <div
-          className="w-[700px] h-[700px] rounded-full"
-          style={{
-            background: 'radial-gradient(circle, rgba(0,217,255,0.065) 0%, rgba(139,92,246,0.045) 40%, transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-      </div>
-
-      <div className="section-container relative z-10">
-        {/* Heading */}
-        <motion.div
-          variants={reducedMotion ? {} : fadeUp}
-          initial={reducedMotion ? 'show' : 'hidden'}
-          animate={isInView ? 'show' : 'hidden'}
-          className="mb-14 text-center"
-        >
-          <span className="section-label block text-center">Contact</span>
-          <h2
-            className="font-syne font-extrabold text-white mb-6 tracking-tight"
-            style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', letterSpacing: '-0.025em' }}
-          >
-            Let's Build Something
+    <section id="contact" ref={ref} className="relative py-20 md:py-32 bg-[#F4EFEC]">
+      <div className="site-container">
+        
+        {/* Header */}
+        <div className="mb-14 text-center max-w-xl mx-auto">
+          <div className="eyebrow justify-center">
+            <Send size={14} />
+            <span>04. Get In Touch</span>
+          </div>
+          <h2 className="section-heading text-center">
+            Let's Engineer Together
           </h2>
-          {/* Triple gradient divider */}
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="h-[2px] w-16 rounded-full bg-gradient-to-r from-transparent to-cyan" />
-            <div className="h-[2px] w-6 rounded-full bg-gradient-to-r from-cyan to-violet" />
-            <div className="h-[2px] w-16 rounded-full bg-gradient-to-r from-violet to-transparent" />
-          </div>
-          <p className="font-inter text-gray-500 text-sm max-w-md mx-auto">
-            Building something interesting or want to talk systems architecture?
+          <p className="section-subtitle text-center mt-2 mx-auto">
+            Whether discussing high-scale backend architecture, AI systems, or full-time opportunities — my inbox is always open.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Contact card */}
-        <motion.div
-          variants={reducedMotion ? {} : fadeUp}
-          initial={reducedMotion ? 'show' : 'hidden'}
-          animate={isInView ? 'show' : 'hidden'}
-          transition={{ delay: 0.1 }}
-          className="max-w-2xl mx-auto"
-        >
-          <div
-            className="rounded-2xl p-8 md:p-10 relative overflow-hidden backdrop-blur-xl"
-            style={{
-              background: 'rgba(12,18,32,0.8)',
-              border: '1px solid rgba(255,255,255,0.07)',
-              boxShadow: '0 0 60px rgba(0,217,255,0.04), 0 20px 60px rgba(0,0,0,0.4)',
-            }}
-          >
-            {/* Corner decoration */}
-            <div className="absolute top-4 right-5 flex gap-1.5" aria-hidden="true">
-              <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#00D9FF', opacity: 0.4, boxShadow: '0 0 6px rgba(0,217,255,0.6)' }} />
-              <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#8B5CF6', opacity: 0.4, boxShadow: '0 0 6px rgba(139,92,246,0.6)' }} />
-              <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.2)' }} />
-            </div>
-
-            {/* Response time hint */}
-            <div className="flex items-center justify-center gap-2 mb-7">
-              <MessageSquare size={14} className="text-gray-600" />
-              <p className="font-mono text-xs text-gray-600 tracking-wider">
-                Typically responds within 24 hours
-              </p>
-            </div>
-
-            {/* Links grid */}
-            <div className="grid sm:grid-cols-2 gap-3">
-              {contactLinks.map((link, i) => {
-                const Icon = link.IconComponent;
-                return (
-                  <motion.a
-                    key={link.key}
-                    id={`contact-${link.key}`}
-                    href={link.getHref(profile.social)}
-                    target={link.key === 'email' ? undefined : '_blank'}
-                    rel={link.key === 'email' ? undefined : 'noopener noreferrer'}
-                    initial={reducedMotion ? {} : { opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.25 + i * 0.09 }}
-                    className="flex items-center gap-3.5 p-4 rounded-xl transition-all duration-300 group"
-                    style={{
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      background: 'rgba(255,255,255,0.02)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = `rgba(${link.colorRgb},0.3)`;
-                      e.currentTarget.style.background = `rgba(${link.colorRgb},0.07)`;
-                      e.currentTarget.style.boxShadow = `0 0 24px rgba(${link.colorRgb},0.08)`;
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    {/* Icon */}
-                    <div
-                      className="p-2.5 rounded-xl flex-shrink-0 transition-all duration-300"
-                      style={{
-                        background: 'rgba(255,255,255,0.04)',
-                        border: '1px solid rgba(255,255,255,0.06)',
-                      }}
-                    >
-                      <Icon
-                        size={17}
-                        className="transition-colors duration-300"
-                        style={{ color: '#6B7280' }}
-                        onMouseEnter={(e) => { e.currentTarget.style.color = link.color; }}
-                      />
-                    </div>
-
-                    {/* Text */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-mono text-[0.62rem] text-gray-600 tracking-[0.15em] uppercase mb-0.5">
-                        {link.label}
-                      </p>
-                      <p className="font-inter text-sm font-medium text-gray-300 truncate">
-                        {link.getValue(profile.social)}
-                      </p>
-                    </div>
-
-                    {/* Arrow */}
-                    <ArrowUpRight
-                      size={14}
-                      style={{ color: link.color, opacity: 0.5 }}
-                      className="flex-shrink-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                    />
-                  </motion.a>
-                );
-              })}
-            </div>
+        {/* Contact Container */}
+        <div className="max-w-2xl mx-auto">
+          
+          {/* Email Quick Copy Box */}
+          <div className="bg-white border border-[#EAE3DC] rounded-2xl p-6 md:p-8 shadow-layer-1 mb-6 text-center">
+            <span className="font-mono text-xs text-[#7E7771] tracking-wider uppercase font-semibold block mb-2">
+              Primary Direct Channel
+            </span>
+            <h3 className="font-jakarta font-extrabold text-2xl md:text-3xl text-[#1C1A19] mb-4">
+              {profile.social.email}
+            </h3>
+            
+            <button
+              onClick={copyEmail}
+              className="btn-primary"
+            >
+              {copied ? <Check size={16} /> : <Copy size={16} />}
+              <span>{copied ? 'Email Copied!' : 'Copy Email Address'}</span>
+            </button>
           </div>
-        </motion.div>
+
+          {/* Social Links Cards */}
+          <div className="grid sm:grid-cols-2 gap-4">
+            {links.map((link) => {
+              const Icon = link.Icon;
+              return (
+                <a
+                  key={link.key}
+                  id={`contact-${link.key}`}
+                  href={link.href(profile.social)}
+                  target={link.key === 'email' ? undefined : '_blank'}
+                  rel={link.key === 'email' ? undefined : 'noopener noreferrer'}
+                  className="floating-card p-5 flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-2.5 rounded-xl bg-[#FDF2EE] text-[#C86D51] group-hover:scale-110 transition-transform">
+                      <Icon size={18} />
+                    </div>
+                    <div>
+                      <h4 className="font-jakarta font-bold text-sm text-[#1C1A19]">
+                        {link.label}
+                      </h4>
+                      <p className="font-mono text-[0.65rem] text-[#7E7771]">
+                        {link.sub}
+                      </p>
+                    </div>
+                  </div>
+
+                  <ArrowUpRight size={16} className="text-[#7E7771] group-hover:text-[#C86D51] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </a>
+              );
+            })}
+          </div>
+
+        </div>
       </div>
     </section>
   );

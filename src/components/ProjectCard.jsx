@@ -1,157 +1,129 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
-import { GitBranch, Layers } from 'lucide-react';
+import { useRef, useState, useCallback } from 'react';
+import { GitBranch, Layers, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { GithubIcon } from './icons';
 import useReducedMotion from '../hooks/useReducedMotion';
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  show: (i) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] },
-  }),
-};
+/* ── Mini Architecture Node Pipeline ── */
+function ArchitectureFlow({ nodes }) {
+  if (!nodes || nodes.length === 0) return null;
+  return (
+    <div className="flex items-center gap-1.5 mb-5 overflow-x-auto pb-1 scrollbar-none">
+      {nodes.map((node, i) => (
+        <div key={i} className="flex items-center gap-1.5 flex-shrink-0">
+          <span className="px-2.5 py-1 rounded-md bg-[#F6F2EE] border border-[#EAE3DC] font-mono text-[0.62rem] text-[#4A4643] font-semibold whitespace-nowrap">
+            {node}
+          </span>
+          {i < nodes.length - 1 && (
+            <svg width="14" height="8" viewBox="0 0 14 8" className="text-[#C86D51] flex-shrink-0">
+              <path d="M0 4h10M8 1l3 3-3 3" stroke="currentColor" strokeWidth="1.2" fill="none" />
+            </svg>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function ProjectCard({ project, index }) {
+  const ref = useRef(null);
   const cardRef = useRef(null);
-  const isInView = useInView(cardRef, { once: true, margin: '-60px' });
+  const inView = useInView(ref, { once: true, margin: '-60px' });
   const reducedMotion = useReducedMotion();
-  const [isHovered, setIsHovered] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
-  const accentColor = project.featured ? '#00D9FF' : '#8B5CF6';
-  const accentRgb = project.featured ? '0,217,255' : '139,92,246';
+  const handleMouseMove = useCallback((e) => {
+    if (reducedMotion || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    setTilt({ x: y * -4, y: x * 5 });
+  }, [reducedMotion]);
+
+  const handleMouseLeave = useCallback(() => {
+    setTilt({ x: 0, y: 0 });
+  }, []);
 
   return (
     <motion.article
-      ref={cardRef}
-      custom={index}
-      variants={reducedMotion ? {} : cardVariants}
-      initial={reducedMotion ? 'show' : 'hidden'}
-      animate={isInView ? 'show' : 'hidden'}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="gradient-border-card relative flex flex-col h-full p-6 md:p-7"
-      style={{
-        transition: 'transform 0.35s ease, box-shadow 0.35s ease',
-        transform: isHovered && !reducedMotion ? 'translateY(-6px)' : 'translateY(0)',
-        boxShadow: isHovered && !reducedMotion
-          ? `0 0 50px rgba(${accentRgb},0.12), 0 20px 50px rgba(0,0,0,0.5)`
-          : '0 4px 20px rgba(0,0,0,0.3)',
-      }}
-      tabIndex={0}
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+      className="perspective-viewport"
     >
-      {/* Top accent line */}
       <div
-        className="absolute top-0 left-6 right-6 h-px rounded-full transition-all duration-500"
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="floating-card p-6 md:p-7 flex flex-col h-full relative overflow-hidden bg-white"
         style={{
-          background: isHovered
-            ? `linear-gradient(90deg, transparent, ${accentColor}80, transparent)`
-            : 'rgba(255,255,255,0.05)',
+          transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
         }}
-      />
-
-      {/* Corner glow */}
-      {isHovered && !reducedMotion && (
-        <div
-          className="absolute -top-12 -right-12 w-48 h-48 rounded-full pointer-events-none"
-          style={{
-            background: `radial-gradient(circle, rgba(${accentRgb},0.12) 0%, transparent 70%)`,
-            filter: 'blur(20px)',
-          }}
-        />
-      )}
-
-      <div className="relative z-10 flex flex-col h-full">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-syne font-bold text-xl text-white tracking-tight leading-tight mb-1.5">
-              {project.title}
-            </h3>
-            <p
-              className="font-mono text-xs tracking-wide"
-              style={{ color: accentColor }}
-            >
-              {project.tagline}
-            </p>
-          </div>
+      >
+        {/* Top Featured Badge */}
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <h3 className="font-jakarta font-extrabold text-xl text-[#1C1A19] leading-tight tracking-tight">
+            {project.title}
+          </h3>
           {project.featured && (
-            <span
-              className="flex-shrink-0 font-mono text-[0.6rem] font-bold tracking-[0.12em] uppercase
-                         px-2.5 py-1 rounded-full border"
-              style={{
-                color: accentColor,
-                background: `rgba(${accentRgb},0.1)`,
-                borderColor: `rgba(${accentRgb},0.3)`,
-                boxShadow: `0 0 12px rgba(${accentRgb},0.15)`,
-              }}
-            >
-              ★ Featured
+            <span className="flex-shrink-0 font-mono text-[0.6rem] font-bold tracking-wider uppercase
+                             px-2.5 py-0.5 rounded-full text-[#C86D51] bg-[#FDF2EE] border border-rgba(200,109,81,0.25)">
+              Featured Architecture
             </span>
           )}
         </div>
 
-        {/* Description */}
-        <p className="font-inter text-sm text-gray-400 mb-4 leading-relaxed flex-grow">
+        {project.tagline && (
+          <p className="font-mono text-xs text-[#7E7771] mb-4 font-semibold">
+            {project.tagline}
+          </p>
+        )}
+
+        {/* System Architecture Node Flow */}
+        <ArchitectureFlow nodes={project.architectureFlow} />
+
+        {/* Narrative Description */}
+        <p className="font-inter text-sm text-[#4A4643] mb-5 leading-relaxed flex-grow">
           {project.description}
         </p>
 
-        {/* Architecture callout */}
-        {project.architectureDetail && (
-          <div className="arch-callout mb-5" style={{ borderLeftColor: `rgba(${accentRgb},0.5)` }}>
-            <p className="font-inter text-xs text-gray-500 leading-relaxed">
-              <span className="font-mono font-semibold" style={{ color: accentColor }}>
-                // arch:{' '}
+        {/* Impact Callout */}
+        {project.impact && (
+          <div className="rounded-xl px-4 py-3 mb-5 text-xs font-inter text-[#1C1A19] bg-[#FDF2EE] border-l-4 border-[#C86D51] flex items-start gap-2.5">
+            <CheckCircle2 size={16} className="text-[#C86D51] flex-shrink-0 mt-0.5" />
+            <div>
+              <span className="font-mono font-bold text-[0.62rem] text-[#C86D51] uppercase tracking-wider block">
+                Engineering Impact
               </span>
-              {project.architectureDetail}
-            </p>
+              <span>{project.impact}</span>
+            </div>
           </div>
         )}
 
-        {/* Tech badges */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
-          {project.tech.map((tech, i) => (
-            <motion.span
-              key={tech}
-              initial={reducedMotion ? {} : { opacity: 0, scale: 0.8 }}
-              animate={isHovered || reducedMotion
-                ? { opacity: 1, scale: 1 }
-                : { opacity: 0.6, scale: 1 }
-              }
-              transition={{ delay: isHovered && !reducedMotion ? i * 0.035 : 0, duration: 0.2 }}
-              className="tech-badge"
-            >
-              {tech}
-            </motion.span>
+        {/* Tech Stack Badges */}
+        <div className="flex flex-wrap gap-1.5 mb-6">
+          {project.tech.map((t) => (
+            <span key={t} className="tag">{t}</span>
           ))}
         </div>
 
-        {/* Footer */}
-        <div
-          className="flex items-center gap-4 pt-4"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
-        >
+        {/* Card Actions Footer */}
+        <div className="flex items-center justify-between pt-4 border-t border-[#EAE3DC] font-mono text-xs">
           <a
             href={project.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 font-mono text-xs font-medium
-                       text-gray-500 transition-colors duration-200"
-            style={{ color: isHovered ? accentColor : undefined }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = accentColor; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = '#6B7280'; }}
+            className="inline-flex items-center gap-1.5 font-bold text-[#1C1A19] hover:text-[#C86D51] transition-colors"
           >
             <GithubIcon size={14} />
-            Source Code
+            <span>Repository Source</span>
+            <ArrowUpRight size={12} className="text-[#C86D51]" />
           </a>
-          <div className="flex items-center gap-1.5 font-mono text-xs text-gray-700">
-            <Layers size={11} />
-            <span>{project.tech.length} stack</span>
-          </div>
-          <div className="flex items-center gap-1.5 font-mono text-xs text-gray-700">
-            <GitBranch size={11} />
-            <span>main</span>
-          </div>
+          <span className="text-[#7E7771] flex items-center gap-1">
+            <Layers size={12} />
+            {project.tech.length} Tech Stack Modules
+          </span>
         </div>
       </div>
     </motion.article>

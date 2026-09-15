@@ -1,394 +1,234 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { ArrowDown, Sparkles, Zap, GitBranch, GraduationCap } from 'lucide-react';
-import NodeGraph from './NodeGraph';
-import useTypewriter from '../hooks/useTypewriter';
+import { motion } from 'framer-motion';
+import { ArrowDown, ArrowRight, Server, Cpu, Database, Shield, Zap } from 'lucide-react';
 import useReducedMotion from '../hooks/useReducedMotion';
+import useMousePosition from '../hooks/useMousePosition';
+import { GithubIcon, LinkedinIcon } from './icons';
 
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.13, delayChildren: 0.3 } },
-};
-const item = {
-  hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-};
+/* ── Interactive 3D System Architecture Card ── */
+function Architectural3DCard({ mouse }) {
+  const tiltX = mouse.y * -8;
+  const tiltY = mouse.x * 10;
 
-const MARQUEE_ITEMS = [
-  'FastAPI', 'Python', 'Docker', 'FAISS', 'PostgreSQL',
-  'LangChain', 'GitHub Actions', 'Nginx', 'React', 'JWT',
-  'Docker Compose', 'Prometheus', 'Grafana', 'OAuth 2.0', 'Redis',
-  'FastAPI', 'Python', 'Docker', 'FAISS', 'PostgreSQL',
-  'LangChain', 'GitHub Actions', 'Nginx', 'React', 'JWT',
-  'Docker Compose', 'Prometheus', 'Grafana', 'OAuth 2.0', 'Redis',
-];
-
-const STAT_CARDS = [
-  { icon: GraduationCap, value: '8.58', label: 'CGPA', color: '#00D9FF', delay: 0 },
-  { icon: Zap, value: '4+', label: 'Projects', color: '#8B5CF6', delay: 0.15 },
-  { icon: GitBranch, value: 'CI/CD', label: 'Pipeline', color: '#00D9FF', delay: 0.3 },
-  { icon: Sparkles, value: 'Agentic', label: 'AI Systems', color: '#8B5CF6', delay: 0.45 },
-];
-
-// Simple background particles
-function Particles() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {Array.from({ length: 28 }).map((_, i) => {
-        const size = Math.random() * 2.5 + 1;
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        const delay = Math.random() * 8;
-        const dur = Math.random() * 6 + 8;
-        const opacity = Math.random() * 0.45 + 0.1;
-        const isViolet = i % 3 === 0;
-        return (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: `${size}px`,
-              height: `${size}px`,
-              left: `${x}%`,
-              top: `${y}%`,
-              background: isViolet ? '#8B5CF6' : '#00D9FF',
-              opacity,
-              animation: `particle-float ${dur}s ${delay}s ease-in-out infinite`,
-              boxShadow: isViolet
-                ? `0 0 ${size * 3}px rgba(139,92,246,0.6)`
-                : `0 0 ${size * 3}px rgba(0,217,255,0.6)`,
-            }}
-          />
-        );
-      })}
+    <div className="perspective-viewport relative w-full h-[460px] flex items-center justify-center">
+      <div
+        className="hero-3d-card relative w-[380px] sm:w-[420px] h-[340px] transition-transform duration-200 ease-out"
+        style={{
+          transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
+        }}
+      >
+        {/* Layer 1: Base Card (Shadow & Foundation) */}
+        <div className="absolute inset-0 bg-[#F4EFEC] border border-[#EAE3DC] rounded-2xl shadow-layer-2 transform translate-z-[-20px] overflow-hidden">
+          <div className="absolute inset-0 bg-noise opacity-40" />
+          <div className="absolute top-4 left-5 flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#E4DDD4]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#E4DDD4]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#E4DDD4]" />
+            <span className="ml-2 font-mono text-[0.65rem] text-[#7E7771] tracking-wider uppercase">
+              system-mesh.v2
+            </span>
+          </div>
+        </div>
+
+        {/* Layer 2: Main Floating White Panel */}
+        <div className="absolute inset-4 bg-white/95 backdrop-blur-md border border-[#EAE3DC] rounded-xl p-5 shadow-3d flex flex-col justify-between transform translate-z-[15px]">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-[#F4EFEC]">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-lg bg-[#FDF2EE] text-[#C86D51]">
+                <Server size={18} />
+              </div>
+              <div>
+                <h4 className="font-jakarta font-bold text-sm text-[#1C1A19]">
+                  API & Agent Infrastructure
+                </h4>
+                <p className="font-mono text-[0.65rem] text-[#7E7771]">
+                  Self-Healing Microservices
+                </p>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-[#FDF2EE] text-[#C86D51] font-mono text-[0.65rem] font-semibold border border-rgba(200,109,81,0.2)">
+              ACTIVE
+            </span>
+          </div>
+
+          {/* Microservices Node Flow */}
+          <div className="grid grid-cols-3 gap-2.5 my-2">
+            <div className="p-3 bg-[#F6F2EE] border border-[#EAE3DC] rounded-lg text-center flex flex-col items-center gap-1 hover:border-[#C86D51] transition-colors">
+              <Cpu size={16} className="text-[#C86D51]" />
+              <span className="font-mono text-[0.68rem] font-bold text-[#1C1A19]">
+                LLM Gateway
+              </span>
+              <span className="font-mono text-[0.58rem] text-[#7E7771]">
+                LangChain
+              </span>
+            </div>
+
+            <div className="p-3 bg-[#F6F2EE] border border-[#EAE3DC] rounded-lg text-center flex flex-col items-center gap-1 hover:border-[#C86D51] transition-colors">
+              <Database size={16} className="text-[#C86D51]" />
+              <span className="font-mono text-[0.68rem] font-bold text-[#1C1A19]">
+                Vector DB
+              </span>
+              <span className="font-mono text-[0.58rem] text-[#7E7771]">
+                FAISS / Pg
+              </span>
+            </div>
+
+            <div className="p-3 bg-[#F6F2EE] border border-[#EAE3DC] rounded-lg text-center flex flex-col items-center gap-1 hover:border-[#C86D51] transition-colors">
+              <Shield size={16} className="text-[#C86D51]" />
+              <span className="font-mono text-[0.68rem] font-bold text-[#1C1A19]">
+                Auth & Cache
+              </span>
+              <span className="font-mono text-[0.58rem] text-[#7E7771]">
+                JWT / Redis
+              </span>
+            </div>
+          </div>
+
+          {/* Metrics Footer */}
+          <div className="pt-2 border-t border-[#F4EFEC] flex items-center justify-between font-mono text-[0.68rem] text-[#4A4643]">
+            <span className="flex items-center gap-1.5">
+              <Zap size={12} className="text-[#C86D51]" />
+              99.9% Uptime
+            </span>
+            <span className="text-[#7E7771]">Latency &lt; 14ms</span>
+          </div>
+        </div>
+
+        {/* Layer 3: Top Floating Badge */}
+        <div className="absolute -top-3 -right-3 bg-white border border-[#EAE3DC] px-4 py-2 rounded-xl shadow-layer-2 flex items-center gap-2 transform translate-z-[45px] hover:scale-105 transition-transform">
+          <span className="w-2 h-2 rounded-full bg-[#C86D51] animate-pulse" />
+          <span className="font-mono text-xs font-bold text-[#1C1A19]">
+            Agentic AI Built
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function HeroSection({ profile }) {
   const reducedMotion = useReducedMotion();
-  const { text, isCursorBlinking } = useTypewriter(profile.typewriterPhrases);
+  const mouse = useMousePosition();
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const glowX = useSpring(mouseX, { damping: 55, stiffness: 70, mass: 1 });
-  const glowY = useSpring(mouseY, { damping: 55, stiffness: 70, mass: 1 });
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    const move = (e) => { mouseX.set(e.clientX - 350); mouseY.set(e.clientY - 350); };
-    window.addEventListener('mousemove', move);
-    return () => window.removeEventListener('mousemove', move);
-  }, [mouseX, mouseY, reducedMotion]);
-
-  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const scrollTo = (id) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden cyber-grid-overlay"
+      className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden bg-[#FBF9F6]"
     >
-      {/* ── Background layers ── */}
-      {!reducedMotion && (
-        <>
-          {/* Cursor glow */}
-          <motion.div
-            className="absolute w-[700px] h-[700px] rounded-full pointer-events-none z-0"
-            style={{
-              x: glowX, y: glowY,
-              background: 'radial-gradient(circle, rgba(0,217,255,0.055) 0%, transparent 65%)',
-            }}
-          />
-          {/* Drifting ambient blobs */}
-          <div className="ambient-blob animate-drift-1" style={{
-            width: '700px', height: '700px', top: '-180px', left: '-180px',
-            background: 'radial-gradient(circle, rgba(0,217,255,0.09) 0%, transparent 65%)',
-            filter: 'blur(70px)',
-          }} />
-          <div className="ambient-blob animate-drift-2" style={{
-            width: '600px', height: '600px', top: '-80px', right: '-150px',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.11) 0%, transparent 65%)',
-            filter: 'blur(65px)',
-          }} />
-          <div className="ambient-blob animate-drift-3" style={{
-            width: '500px', height: '500px', bottom: '60px', left: '30%',
-            background: 'radial-gradient(circle, rgba(0,217,255,0.06) 0%, transparent 65%)',
-            filter: 'blur(80px)',
-          }} />
-          {/* Floating particles */}
-          <Particles />
-        </>
-      )}
+      {/* Background Soft Warm Mesh */}
+      <div className="absolute inset-0 pointer-events-none bg-noise opacity-30" />
+      <div className="absolute top-1/4 right-10 w-96 h-96 rounded-full bg-[#FDF2EE] blur-3xl opacity-60 pointer-events-none" />
+      <div className="absolute bottom-10 left-10 w-80 h-80 rounded-full bg-[#F3EEEA] blur-3xl opacity-70 pointer-events-none" />
 
-      {/* Node graph bg */}
-      <div className="absolute inset-0 z-0">
-        <NodeGraph />
-        <div className="absolute inset-0 bg-gradient-to-b from-base/20 via-transparent to-base" />
-        <div className="absolute inset-0 bg-gradient-to-r from-base/25 via-transparent to-base/25" />
-      </div>
-
-      {/* ── Ghost watermark text ── */}
-      <div
-        className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none z-[1] select-none"
-        aria-hidden="true"
-      >
-        <span
-          className="font-syne font-black text-white uppercase tracking-[0.25em] whitespace-nowrap"
-          style={{
-            fontSize: 'clamp(5rem, 16vw, 14rem)',
-            opacity: 0.022,
-            userSelect: 'none',
-            letterSpacing: '0.2em',
-          }}
-        >
-          BACKEND ENGINEER
-        </span>
-      </div>
-
-      {/* ── Rotating halo ring behind name ── */}
-      {!reducedMotion && (
-        <div
-          className="absolute z-[2] pointer-events-none"
-          style={{
-            width: 'clamp(340px, 55vw, 720px)',
-            height: 'clamp(200px, 28vw, 380px)',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          <div
-            className="w-full h-full rounded-full animate-halo-spin"
-            style={{
-              background: 'conic-gradient(from 0deg, transparent 20%, rgba(0,217,255,0.18) 40%, rgba(139,92,246,0.22) 60%, rgba(0,217,255,0.18) 80%, transparent 100%)',
-              filter: 'blur(32px)',
-              borderRadius: '50%',
-            }}
-          />
-        </div>
-      )}
-
-      {/* ── Floating Stat Cards ── */}
-      {!reducedMotion && (
-        <div className="absolute inset-0 z-[3] pointer-events-none">
-          {/* Top-left */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-[22%] left-[5%] xl:left-[8%]"
-            style={{ animation: 'float-stat 7s 0s ease-in-out infinite' }}
-          >
-            <StatCard card={STAT_CARDS[0]} />
-          </motion.div>
-          {/* Top-right */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.35, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-[22%] right-[5%] xl:right-[8%]"
-            style={{ animation: 'float-stat 9s 1s ease-in-out infinite' }}
-          >
-            <StatCard card={STAT_CARDS[1]} />
-          </motion.div>
-          {/* Bottom-left */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute bottom-[28%] left-[5%] xl:left-[8%]"
-            style={{ animation: 'float-stat 8s 0.5s ease-in-out infinite' }}
-          >
-            <StatCard card={STAT_CARDS[2]} />
-          </motion.div>
-          {/* Bottom-right */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.65, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute bottom-[28%] right-[5%] xl:right-[8%]"
-            style={{ animation: 'float-stat 10s 1.5s ease-in-out infinite' }}
-          >
-            <StatCard card={STAT_CARDS[3]} />
-          </motion.div>
-        </div>
-      )}
-
-      {/* ── Main Content ── */}
-      <motion.div
-        variants={reducedMotion ? {} : container}
-        initial={reducedMotion ? 'show' : 'hidden'}
-        animate="show"
-        className="relative z-10 text-center px-6 max-w-4xl mx-auto"
-      >
-        {/* Availability badge */}
-        <motion.div variants={reducedMotion ? {} : item} className="flex justify-center mb-8">
-          <div
-            className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full backdrop-blur-sm"
-            style={{
-              background: 'rgba(0,217,255,0.07)',
-              border: '1px solid rgba(0,217,255,0.3)',
-              boxShadow: '0 0 24px rgba(0,217,255,0.15), inset 0 0 12px rgba(0,217,255,0.05)',
-            }}
-          >
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping-soft absolute inline-flex h-full w-full rounded-full bg-cyan opacity-80" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan shadow-[0_0_8px_rgba(0,217,255,0.9)]" />
-            </span>
-            <span className="font-mono text-[0.7rem] text-cyan tracking-[0.18em] uppercase font-bold">
-              Available for opportunities
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Name — keep Syne font unchanged */}
-        <motion.h1
-          variants={reducedMotion ? {} : item}
-          className="font-syne font-extrabold text-white mb-5 leading-[0.93] tracking-tight"
-          style={{
-            fontSize: 'clamp(3.8rem, 9vw, 7.5rem)',
-            letterSpacing: '-0.035em',
-            textShadow: '0 0 60px rgba(255,255,255,0.08)',
-          }}
-        >
-          {profile.name}
-        </motion.h1>
-
-        {/* Subtitle with gradient */}
-        <motion.p
-          variants={reducedMotion ? {} : item}
-          className="gradient-text-cyan font-inter mb-8 max-sm:text-base"
-          style={{
-            fontSize: 'clamp(1rem, 2.4vw, 1.2rem)',
-            fontWeight: 400,
-          }}
-        >
-          {profile.subtitle}
-        </motion.p>
-
-        {/* Typewriter */}
-        <motion.div
-          variants={reducedMotion ? {} : item}
-          className="flex items-center justify-center mb-10"
-        >
-          <div
-            className="inline-flex items-center gap-0 px-5 py-2.5 rounded-xl backdrop-blur-sm"
-            style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(0,217,255,0.18)',
-              boxShadow: '0 0 20px rgba(0,217,255,0.06)',
-            }}
-          >
-            <span
-              className="font-mono text-cyan font-semibold"
-              style={{ fontSize: 'clamp(0.9rem, 2vw, 1.15rem)' }}
+      <div className="site-container relative z-10 w-full">
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-8 items-center min-h-[75vh]">
+          
+          {/* Left Text & Identity */}
+          <div className="max-w-2xl">
+            {/* Status Pill */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6"
             >
-              {text}
-            </span>
-            <span
-              className={`inline-block w-[2px] h-5 bg-cyan ml-0.5 rounded-full shadow-[0_0_8px_rgba(0,217,255,0.8)] ${
-                isCursorBlinking ? 'animate-typewriter-blink' : ''
-              }`}
-              aria-hidden="true"
-            />
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white border border-[#EAE3DC] shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-[#C86D51] animate-pulse" />
+                <span className="font-mono text-[0.72rem] font-semibold text-[#4A4643] uppercase tracking-wider">
+                  Open for System Architecture & AI Roles
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Main Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="font-jakarta font-extrabold text-[#1C1A19] leading-[1.08] tracking-tight mb-6"
+              style={{ fontSize: 'clamp(2.5rem, 5.2vw, 4rem)' }}
+            >
+              Building Scalable <span className="text-[#C86D51]">Backend Systems</span> & AI Architecture.
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="font-inter text-[#4A4643] text-lg leading-relaxed mb-8 max-w-xl"
+            >
+              I engineering resilient microservices, vector retrieval systems, and self-healing backend workflows designed for performance and scale.
+            </motion.p>
+
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex items-center gap-4 flex-wrap"
+            >
+              <button
+                id="hero-explore-work"
+                onClick={() => scrollTo('projects')}
+                className="btn-primary"
+              >
+                <span>Explore Featured Work</span>
+                <ArrowRight size={16} />
+              </button>
+
+              <a
+                href={profile.social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary"
+              >
+                <GithubIcon size={16} className="text-[#1C1A19]" />
+                <span>GitHub</span>
+              </a>
+
+              <a
+                href={profile.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary"
+              >
+                <LinkedinIcon size={16} className="text-[#0A66C2]" />
+                <span>LinkedIn</span>
+              </a>
+            </motion.div>
           </div>
-        </motion.div>
 
-        {/* CTAs */}
-        <motion.div
-          variants={reducedMotion ? {} : item}
-          className="flex items-center justify-center gap-4 flex-wrap mb-16"
-        >
-          <button
-            id="hero-cta-projects"
-            onClick={() => scrollTo('projects')}
-            className="btn-gradient relative px-8 py-3.5 rounded-xl font-syne font-bold text-base text-white
-                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan"
+          {/* Right 3D Architectural Scene */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="hidden lg:block"
           >
-            <span className="relative z-10 flex items-center gap-2">
-              <Sparkles size={16} />
-              View Projects
-            </span>
-          </button>
+            <Architectural3DCard mouse={reducedMotion ? { x: 0, y: 0 } : mouse} />
+          </motion.div>
+        </div>
+      </div>
 
-          <button
-            id="hero-cta-contact"
-            onClick={() => scrollTo('contact')}
-            className="px-8 py-3.5 rounded-xl font-syne font-semibold text-base
-                       text-gray-200 border border-white/15 hover:border-cyan/50 hover:text-white
-                       backdrop-blur-sm
-                       hover:shadow-[0_0_24px_rgba(0,217,255,0.12)]
-                       transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
-                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan"
-            style={{ background: 'rgba(255,255,255,0.04)' }}
-          >
-            Get in Touch
-          </button>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div variants={reducedMotion ? {} : item}>
-          <button
-            onClick={() => scrollTo('about')}
-            className="group flex flex-col items-center gap-2 text-gray-600 hover:text-cyan transition-colors mx-auto"
-            aria-label="Scroll to About"
-          >
-            <span className="font-mono text-[0.6rem] tracking-[0.25em] uppercase">scroll</span>
-            <div className="w-px h-8 bg-gradient-to-b from-cyan/50 to-transparent group-hover:from-cyan" />
-            <ArrowDown size={14} className="animate-float" />
-          </button>
-        </motion.div>
-      </motion.div>
-
-      {/* ── Tech Marquee (bottom) ── */}
-      <motion.div
+      {/* Layer 1 to Layer 2 Transition Indicator */}
+      <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-0 left-0 right-0 z-10 pb-4"
+        transition={{ delay: 0.8 }}
+        onClick={() => scrollTo('about')}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-[#7E7771] hover:text-[#C86D51] transition-colors z-10"
+        aria-label="Scroll to Layer 2: About"
       >
-        <div className="section-divider mb-4" />
-        <div className="marquee-container">
-          <div className="marquee-track">
-            {MARQUEE_ITEMS.map((item, i) => (
-              <span key={i} className="flex items-center gap-3">
-                <span className="font-mono text-[0.7rem] tracking-widest uppercase text-gray-600 hover:text-cyan transition-colors cursor-default">
-                  {item}
-                </span>
-                <span className="text-gray-800">·</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      </motion.div>
+        <span className="font-mono text-[0.62rem] font-bold tracking-[0.2em] uppercase">
+          02. ABOUT & PHILOSOPHY
+        </span>
+        <ArrowDown size={14} className="animate-bounce" />
+      </motion.button>
     </section>
-  );
-}
-
-function StatCard({ card }) {
-  const Icon = card.icon;
-  return (
-    <div
-      className="stat-card flex items-center gap-2.5 cursor-default group"
-      style={{ '--card-glow': card.color }}
-    >
-      <div
-        className="p-1.5 rounded-lg transition-all duration-300"
-        style={{ background: `${card.color}15`, border: `1px solid ${card.color}30` }}
-      >
-        <Icon size={14} style={{ color: card.color }} />
-      </div>
-      <div>
-        <div
-          className="font-syne font-black text-sm leading-none"
-          style={{ color: card.color }}
-        >
-          {card.value}
-        </div>
-        <div className="font-mono text-[0.6rem] text-gray-600 tracking-wider uppercase mt-0.5">
-          {card.label}
-        </div>
-      </div>
-    </div>
   );
 }
