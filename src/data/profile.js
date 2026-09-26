@@ -185,6 +185,7 @@ I also co-authored research on self-healing cloud infrastructure, combining auto
   },
 
   githubUsername: "ajayg10",
+  totalRepos: 21,
   resumeUrl: "/images/Ajayy_Garg_Resume.pdf",
 };
 

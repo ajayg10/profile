@@ -1,6 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { Star, GitFork, ExternalLink, BookOpen, Code2 } from 'lucide-react';
+import { Star, GitFork, ExternalLink, BookOpen, Code2, GitBranch, FolderGit2 } from 'lucide-react';
 import { GithubIcon } from './icons';
 import useReducedMotion from '../hooks/useReducedMotion';
 
@@ -8,11 +8,14 @@ const LANG_COLORS = {
   Python: '#3572A5', JavaScript: '#F1E05A', Java: '#B07219',
   Go: '#00ADD8', TypeScript: '#3178C6', HTML: '#E34C26',
   CSS: '#563D7C', Shell: '#89E051', Dockerfile: '#384D54',
+  C: '#555555', 'C++': '#f34b7d',
 };
 
-function computeStats(repos) {
+function computeStats(repos, userProfile, totalReposConfig) {
   const totalStars = repos.reduce((s, r) => s + (r.stargazers_count || 0), 0);
-  const totalForks = repos.reduce((s, r) => s + (r.forks_count || 0), 0);
+  const forksEarned = repos.reduce((s, r) => s + (r.forks_count || 0), 0);
+  const forksCount = repos.filter(r => r.fork).length;
+  const sourcesCount = repos.filter(r => !r.fork).length;
 
   const langMap = {};
   repos.forEach(r => {
@@ -23,20 +26,41 @@ function computeStats(repos) {
     .slice(0, 5);
   const totalLangRepos = topLangs.reduce((s, [, c]) => s + c, 0);
 
-  return { totalStars, totalForks, topLangs, totalLangRepos, repoCount: repos.length };
+  const totalRepos = totalReposConfig || (userProfile?.public_repos ? Math.max(userProfile.public_repos, repos.length) : repos.length);
+
+  return {
+    totalRepos,
+    sourcesCount,
+    forksCount,
+    forksEarned,
+    totalStars,
+    topLangs,
+    totalLangRepos,
+    publicCount: userProfile?.public_repos || repos.length,
+  };
 }
 
-function StatBlock({ value, label, Icon }) {
+function StatBlock({ value, label, sublabel, Icon }) {
   return (
-    <div className="flex flex-col items-center gap-1">
-      {Icon && <Icon size={16} className="text-[#C86D51] mb-1" />}
-      <div className="font-jakarta font-extrabold text-2xl text-[#1C1A19]">{value}</div>
-      <div className="font-mono text-[0.6rem] text-[#7E7771] tracking-wider uppercase">{label}</div>
+    <div className="flex flex-col items-center text-center">
+      {Icon && <Icon size={16} className="text-[#C86D51] mb-1.5" />}
+      <div className="font-jakarta font-extrabold text-2xl md:text-3xl text-[#1C1A19] leading-tight">
+        {value}
+      </div>
+      <div className="font-mono text-[0.62rem] text-[#1C1A19] font-bold tracking-wider uppercase mt-0.5">
+        {label}
+      </div>
+      {sublabel && (
+        <span className="font-mono text-[0.55rem] text-[#7E7771]">
+          {sublabel}
+        </span>
+      )}
     </div>
   );
 }
 
 function LangBar({ langs, total }) {
+  if (!langs || langs.length === 0) return null;
   return (
     <div>
       <p className="font-mono text-[0.62rem] text-[#7E7771] tracking-wider uppercase mb-3 font-semibold">
@@ -74,30 +98,57 @@ function LangBar({ langs, total }) {
 export default function GitHubSection({ profile }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
-  const reducedMotion = useReducedMotion();
   const [repos, setRepos] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [filter, setFilter] = useState('all'); // 'all' | 'sources' | 'forks'
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     (async () => {
       try {
-        const res = await fetch(
-          `https://api.github.com/users/${profile.githubUsername}/repos?sort=updated&per_page=30&type=owner`
-        );
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        setRepos(data.filter(r => !r.fork));
-      } catch {
-        setError(true);
+        const [userRes, reposRes] = await Promise.all([
+          fetch(`https://api.github.com/users/${profile.githubUsername}`),
+          fetch(`https://api.github.com/users/${profile.githubUsername}/repos?sort=updated&per_page=100`)
+        ]);
+
+        let userData = null;
+        if (userRes.ok) {
+          userData = await userRes.json();
+        }
+
+        if (!reposRes.ok) throw new Error('Failed to fetch repositories');
+        const reposData = await reposRes.json();
+
+        if (isMounted) {
+          setUserProfile(userData);
+          // Keep all repositories (sources + forks)
+          setRepos(Array.isArray(reposData) ? reposData : []);
+        }
+      } catch (err) {
+        console.error('GitHub API fetch error:', err);
+        if (isMounted) setError(true);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     })();
+    return () => { isMounted = false; };
   }, [profile.githubUsername]);
 
-  const stats = !loading && !error && repos.length ? computeStats(repos) : null;
-  const displayRepos = repos.slice(0, 6);
+  const stats = !loading && !error && repos.length > 0
+    ? computeStats(repos, userProfile, profile.totalRepos)
+    : null;
+
+  // Filtered repositories based on tab selection
+  const filteredRepos = repos.filter(repo => {
+    if (filter === 'sources') return !repo.fork;
+    if (filter === 'forks') return repo.fork;
+    return true; // 'all'
+  });
+
+  const displayedRepos = showAll ? filteredRepos : filteredRepos.slice(0, 6);
 
   return (
     <section id="github" ref={ref} className="relative py-20 md:py-28 bg-[#FBF9F6]">
@@ -113,19 +164,24 @@ export default function GitHubSection({ profile }) {
             Live GitHub Ecosystem
           </h2>
           <p className="section-subtitle mt-2">
-            Real-time contribution commit frequency and dynamic repository metrics.
+            Real-time contribution activity, dynamic repository metrics, and open-source systems.
           </p>
         </div>
 
         {/* Top row: heatmap + computed stats */}
-        <div className="grid sm:grid-cols-2 gap-6 mb-8">
+        <div className="grid sm:grid-cols-2 gap-6 mb-10">
           
           {/* Contribution heatmap */}
           <div className="floating-card p-6 flex flex-col justify-between">
             <div>
-              <p className="font-mono text-[0.65rem] text-[#7E7771] tracking-wider uppercase mb-3 font-semibold">
-                Contribution Heatmap
-              </p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-mono text-[0.65rem] text-[#7E7771] tracking-wider uppercase font-semibold">
+                  Contribution Heatmap
+                </p>
+                <span className="font-mono text-[0.65rem] text-[#C86D51] font-bold">
+                  @{profile.githubUsername}
+                </span>
+              </div>
               <img
                 src={`https://ghchart.rshah.org/c86d51/${profile.githubUsername}`}
                 alt={`${profile.name}'s GitHub contribution graph`}
@@ -135,14 +191,17 @@ export default function GitHubSection({ profile }) {
               />
             </div>
             <div className="mt-4 pt-3 border-t border-[#EAE3DC] flex items-center justify-between font-mono text-xs text-[#7E7771]">
-              <span>Active Committer</span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#C86D51] animate-pulse" />
+                Active Committer
+              </span>
               <a
                 href={profile.social.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#C86D51] font-bold hover:underline flex items-center gap-1"
               >
-                @{profile.githubUsername}
+                View Profile
                 <ExternalLink size={12} />
               </a>
             </div>
@@ -172,10 +231,26 @@ export default function GitHubSection({ profile }) {
 
             {stats && (
               <>
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <StatBlock value={stats.repoCount}   label="Repos"  Icon={BookOpen} />
-                  <StatBlock value={stats.totalStars}  label="Stars"  Icon={Star} />
-                  <StatBlock value={stats.totalForks}  label="Forks"  Icon={GitFork} />
+                {/* 3 Main Stat Blocks */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  <StatBlock
+                    value={stats.totalRepos}
+                    label="Repositories"
+                    sublabel="Total on GitHub"
+                    Icon={BookOpen}
+                  />
+                  <StatBlock
+                    value={stats.sourcesCount}
+                    label="Original Repos"
+                    sublabel="Built from scratch"
+                    Icon={FolderGit2}
+                  />
+                  <StatBlock
+                    value={stats.forksCount}
+                    label="Forked Repos"
+                    sublabel="Open source forks"
+                    Icon={GitFork}
+                  />
                 </div>
 
                 <div className="pt-4 border-t border-[#EAE3DC]">
@@ -186,31 +261,89 @@ export default function GitHubSection({ profile }) {
           </div>
         </div>
 
-        {/* Repositories grid */}
-        {!loading && !error && (
+        {/* Repositories section with filter tabs */}
+        {!loading && !error && repos.length > 0 && (
           <div>
-            <h3 className="font-jakarta font-bold text-lg text-[#1C1A19] mb-4">
-              Recent Repositories
-            </h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {displayRepos.map((repo) => (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="font-jakarta font-bold text-xl text-[#1C1A19]">
+                  Repositories Showcase
+                </h3>
+                <p className="font-mono text-xs text-[#7E7771] mt-0.5">
+                  Showing {displayedRepos.length} of {filteredRepos.length} {filter === 'all' ? 'public' : filter} repositories
+                </p>
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="inline-flex p-1 bg-[#F4EFEC] border border-[#EAE3DC] rounded-xl self-start sm:self-auto font-mono text-xs">
+                <button
+                  onClick={() => { setFilter('all'); setShowAll(false); }}
+                  className={`px-3 py-1.5 rounded-lg transition-all font-semibold ${
+                    filter === 'all'
+                      ? 'bg-white text-[#1C1A19] shadow-sm'
+                      : 'text-[#7E7771] hover:text-[#1C1A19]'
+                  }`}
+                >
+                  All ({repos.length})
+                </button>
+                <button
+                  onClick={() => { setFilter('sources'); setShowAll(false); }}
+                  className={`px-3 py-1.5 rounded-lg transition-all font-semibold ${
+                    filter === 'sources'
+                      ? 'bg-white text-[#1C1A19] shadow-sm'
+                      : 'text-[#7E7771] hover:text-[#1C1A19]'
+                  }`}
+                >
+                  Original ({repos.filter(r => !r.fork).length})
+                </button>
+                <button
+                  onClick={() => { setFilter('forks'); setShowAll(false); }}
+                  className={`px-3 py-1.5 rounded-lg transition-all font-semibold ${
+                    filter === 'forks'
+                      ? 'bg-white text-[#1C1A19] shadow-sm'
+                      : 'text-[#7E7771] hover:text-[#1C1A19]'
+                  }`}
+                >
+                  Forks ({repos.filter(r => r.fork).length})
+                </button>
+              </div>
+            </div>
+
+            {/* Repositories Grid */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {displayedRepos.map((repo) => (
                 <a
                   key={repo.id}
                   href={repo.html_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="floating-card p-5 flex flex-col justify-between group"
+                  className="floating-card p-5 flex flex-col justify-between group relative overflow-hidden"
                 >
                   <div>
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <h4 className="font-mono text-sm font-bold text-[#1C1A19] group-hover:text-[#C86D51] transition-colors truncate">
-                        {repo.name}
-                      </h4>
-                      <ExternalLink size={12} className="text-[#7E7771] group-hover:text-[#C86D51]" />
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <h4 className="font-mono text-sm font-bold text-[#1C1A19] group-hover:text-[#C86D51] transition-colors truncate">
+                          {repo.name}
+                        </h4>
+                      </div>
+                      
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {repo.fork && (
+                          <span className="px-2 py-0.5 rounded text-[0.6rem] font-mono font-bold bg-[#FDF2EE] text-[#C86D51] border border-rgba(200,109,81,0.2)">
+                            Fork
+                          </span>
+                        )}
+                        <ExternalLink size={13} className="text-[#7E7771] group-hover:text-[#C86D51] transition-colors" />
+                      </div>
                     </div>
-                    {repo.description && (
+
+                    {repo.description ? (
                       <p className="font-inter text-xs text-[#4A4643] mb-4 line-clamp-2 leading-relaxed">
                         {repo.description}
+                      </p>
+                    ) : (
+                      <p className="font-mono text-[0.7rem] text-[#7E7771] italic mb-4">
+                        {repo.fork ? 'Forked repository' : 'Source repository'}
                       </p>
                     )}
                   </div>
@@ -239,6 +372,18 @@ export default function GitHubSection({ profile }) {
                 </a>
               ))}
             </div>
+
+            {/* Toggle Show More / Show Less */}
+            {filteredRepos.length > 6 && (
+              <div className="text-center">
+                <button
+                  onClick={() => setShowAll(!showAll)}
+                  className="btn-secondary py-2 px-6 text-xs font-mono font-semibold"
+                >
+                  {showAll ? 'Show Fewer Repositories' : `Show All ${filteredRepos.length} Repositories`}
+                </button>
+              </div>
+            )}
           </div>
         )}
 
