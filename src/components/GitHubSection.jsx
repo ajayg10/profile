@@ -1,8 +1,6 @@
-import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { Star, GitFork, ExternalLink, BookOpen, Code2, GitBranch, FolderGit2 } from 'lucide-react';
+import { Star, GitFork, ExternalLink, BookOpen, Code2, FolderGit2 } from 'lucide-react';
 import { GithubIcon } from './icons';
-import useReducedMotion from '../hooks/useReducedMotion';
 
 const LANG_COLORS = {
   Python: '#3572A5', JavaScript: '#F1E05A', Java: '#B07219',
@@ -43,7 +41,7 @@ function computeStats(repos, userProfile, totalReposConfig) {
 function StatBlock({ value, label, sublabel, Icon }) {
   return (
     <div className="flex flex-col items-center text-center">
-      {Icon && <Icon size={16} className="text-[#C86D51] mb-1.5" />}
+      {Icon && <Icon size={16} className="text-[#A9533A] mb-1.5" />}
       <div className="font-jakarta font-extrabold text-2xl md:text-3xl text-[#1C1A19] leading-tight">
         {value}
       </div>
@@ -51,7 +49,7 @@ function StatBlock({ value, label, sublabel, Icon }) {
         {label}
       </div>
       {sublabel && (
-        <span className="font-mono text-[0.55rem] text-[#7E7771]">
+        <span className="font-mono text-[0.55rem] text-[#6B6460]">
           {sublabel}
         </span>
       )}
@@ -63,7 +61,7 @@ function LangBar({ langs, total }) {
   if (!langs || langs.length === 0) return null;
   return (
     <div>
-      <p className="font-mono text-[0.62rem] text-[#7E7771] tracking-wider uppercase mb-3 font-semibold">
+      <p className="font-mono text-[0.62rem] text-[#6B6460] tracking-wider uppercase mb-3 font-semibold">
         Top Languages Breakdown
       </p>
       <div className="flex rounded-full overflow-hidden h-2 mb-4 gap-px bg-[#F4EFEC]">
@@ -85,7 +83,7 @@ function LangBar({ langs, total }) {
               style={{ backgroundColor: LANG_COLORS[lang] || '#C86D51' }}
             />
             <span className="font-mono text-xs text-[#1C1A19] font-medium">{lang}</span>
-            <span className="font-mono text-[0.65rem] text-[#7E7771]">
+            <span className="font-mono text-[0.65rem] text-[#6B6460]">
               {Math.round((count / total) * 100)}%
             </span>
           </div>
@@ -97,7 +95,6 @@ function LangBar({ langs, total }) {
 
 export default function GitHubSection({ profile }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
   const [repos, setRepos] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -127,8 +124,7 @@ export default function GitHubSection({ profile }) {
           // Keep all repositories (sources + forks)
           setRepos(Array.isArray(reposData) ? reposData : []);
         }
-      } catch (err) {
-        console.error('GitHub API fetch error:', err);
+      } catch {
         if (isMounted) setError(true);
       } finally {
         if (isMounted) setLoading(false);
@@ -158,13 +154,13 @@ export default function GitHubSection({ profile }) {
         <div className="mb-14">
           <div className="eyebrow">
             <Code2 size={14} />
-            <span>Open Source & Activity</span>
+            <span>Open Source</span>
           </div>
           <h2 className="section-heading">
-            Live GitHub Ecosystem
+            GitHub Activity
           </h2>
           <p className="section-subtitle mt-2">
-            Real-time contribution activity, dynamic repository metrics, and open-source systems.
+            Contribution graph and public repositories, fetched live from the GitHub API.
           </p>
         </div>
 
@@ -175,10 +171,10 @@ export default function GitHubSection({ profile }) {
           <div className="floating-card p-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <p className="font-mono text-[0.65rem] text-[#7E7771] tracking-wider uppercase font-semibold">
+                <p className="font-mono text-[0.65rem] text-[#6B6460] tracking-wider uppercase font-semibold">
                   Contribution Heatmap
                 </p>
-                <span className="font-mono text-[0.65rem] text-[#C86D51] font-bold">
+                <span className="font-mono text-[0.65rem] text-[#A9533A] font-bold">
                   @{profile.githubUsername}
                 </span>
               </div>
@@ -190,16 +186,16 @@ export default function GitHubSection({ profile }) {
                 onError={e => { e.currentTarget.style.display = 'none'; }}
               />
             </div>
-            <div className="mt-4 pt-3 border-t border-[#EAE3DC] flex items-center justify-between font-mono text-xs text-[#7E7771]">
+            <div className="mt-4 pt-3 border-t border-[#EAE3DC] flex items-center justify-between font-mono text-xs text-[#6B6460]">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#C86D51] animate-pulse" />
-                Active Committer
+                Contributions, last 12 months
               </span>
               <a
                 href={profile.social.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#C86D51] font-bold hover:underline flex items-center gap-1"
+                className="text-[#A9533A] font-bold hover:underline flex items-center gap-1"
               >
                 View Profile
                 <ExternalLink size={12} />
@@ -217,7 +213,7 @@ export default function GitHubSection({ profile }) {
 
             {error && (
               <div className="flex-1 flex flex-col items-center justify-center gap-3">
-                <p className="font-inter text-xs text-[#7E7771]">Couldn't fetch GitHub stats</p>
+                <p className="font-inter text-xs text-[#6B6460]">Couldn't fetch GitHub stats</p>
                 <a
                   href={profile.social.github}
                   target="_blank"
@@ -242,7 +238,7 @@ export default function GitHubSection({ profile }) {
                   <StatBlock
                     value={stats.sourcesCount}
                     label="Original Repos"
-                    sublabel="Built from scratch"
+                    sublabel="Not forks"
                     Icon={FolderGit2}
                   />
                   <StatBlock
@@ -269,7 +265,7 @@ export default function GitHubSection({ profile }) {
                 <h3 className="font-jakarta font-bold text-xl text-[#1C1A19]">
                   Repositories Showcase
                 </h3>
-                <p className="font-mono text-xs text-[#7E7771] mt-0.5">
+                <p className="font-mono text-xs text-[#6B6460] mt-0.5">
                   Showing {displayedRepos.length} of {filteredRepos.length} {filter === 'all' ? 'public' : filter} repositories
                 </p>
               </div>
@@ -277,31 +273,31 @@ export default function GitHubSection({ profile }) {
               {/* Filter Tabs */}
               <div className="inline-flex p-1 bg-[#F4EFEC] border border-[#EAE3DC] rounded-xl self-start sm:self-auto font-mono text-xs">
                 <button
-                  onClick={() => { setFilter('all'); setShowAll(false); }}
+                  type="button" aria-pressed={filter === 'all'} onClick={() => { setFilter('all'); setShowAll(false); }}
                   className={`px-3 py-1.5 rounded-lg transition-all font-semibold ${
                     filter === 'all'
                       ? 'bg-white text-[#1C1A19] shadow-sm'
-                      : 'text-[#7E7771] hover:text-[#1C1A19]'
+                      : 'text-[#6B6460] hover:text-[#1C1A19]'
                   }`}
                 >
                   All ({repos.length})
                 </button>
                 <button
-                  onClick={() => { setFilter('sources'); setShowAll(false); }}
+                  type="button" aria-pressed={filter === 'sources'} onClick={() => { setFilter('sources'); setShowAll(false); }}
                   className={`px-3 py-1.5 rounded-lg transition-all font-semibold ${
                     filter === 'sources'
                       ? 'bg-white text-[#1C1A19] shadow-sm'
-                      : 'text-[#7E7771] hover:text-[#1C1A19]'
+                      : 'text-[#6B6460] hover:text-[#1C1A19]'
                   }`}
                 >
                   Original ({repos.filter(r => !r.fork).length})
                 </button>
                 <button
-                  onClick={() => { setFilter('forks'); setShowAll(false); }}
+                  type="button" aria-pressed={filter === 'forks'} onClick={() => { setFilter('forks'); setShowAll(false); }}
                   className={`px-3 py-1.5 rounded-lg transition-all font-semibold ${
                     filter === 'forks'
                       ? 'bg-white text-[#1C1A19] shadow-sm'
-                      : 'text-[#7E7771] hover:text-[#1C1A19]'
+                      : 'text-[#6B6460] hover:text-[#1C1A19]'
                   }`}
                 >
                   Forks ({repos.filter(r => r.fork).length})
@@ -322,18 +318,18 @@ export default function GitHubSection({ profile }) {
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <h4 className="font-mono text-sm font-bold text-[#1C1A19] group-hover:text-[#C86D51] transition-colors truncate">
+                        <h4 className="font-mono text-sm font-bold text-[#1C1A19] group-hover:text-[#A9533A] transition-colors truncate">
                           {repo.name}
                         </h4>
                       </div>
                       
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         {repo.fork && (
-                          <span className="px-2 py-0.5 rounded text-[0.6rem] font-mono font-bold bg-[#FDF2EE] text-[#C86D51] border border-rgba(200,109,81,0.2)">
+                          <span className="px-2 py-0.5 rounded text-[0.6rem] font-mono font-bold bg-[#FDF2EE] text-[#A9533A] border border-[#C86D51]/20">
                             Fork
                           </span>
                         )}
-                        <ExternalLink size={13} className="text-[#7E7771] group-hover:text-[#C86D51] transition-colors" />
+                        <ExternalLink size={13} className="text-[#6B6460] group-hover:text-[#A9533A] transition-colors" />
                       </div>
                     </div>
 
@@ -342,13 +338,13 @@ export default function GitHubSection({ profile }) {
                         {repo.description}
                       </p>
                     ) : (
-                      <p className="font-mono text-[0.7rem] text-[#7E7771] italic mb-4">
+                      <p className="font-mono text-[0.7rem] text-[#6B6460] italic mb-4">
                         {repo.fork ? 'Forked repository' : 'Source repository'}
                       </p>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs font-mono text-[#7E7771] pt-3 border-t border-[#F4EFEC]">
+                  <div className="flex items-center gap-4 text-xs font-mono text-[#6B6460] pt-3 border-t border-[#F4EFEC]">
                     {repo.language && (
                       <span className="flex items-center gap-1.5">
                         <span
@@ -360,7 +356,7 @@ export default function GitHubSection({ profile }) {
                     )}
                     {repo.stargazers_count > 0 && (
                       <span className="flex items-center gap-1">
-                        <Star size={12} className="text-[#C86D51]" /> {repo.stargazers_count}
+                        <Star size={12} className="text-[#A9533A]" /> {repo.stargazers_count}
                       </span>
                     )}
                     {repo.forks_count > 0 && (

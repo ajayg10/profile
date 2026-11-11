@@ -29,7 +29,6 @@ export default function useMousePosition() {
     // Skip on touch devices or when reduced motion is preferred
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if (reducedMotion || isTouchDevice) {
-      setPosition({ x: 0, y: 0 });
       return;
     }
 

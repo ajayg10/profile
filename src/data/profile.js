@@ -1,173 +1,216 @@
+// Single source of truth for site content.
+// Rule: every claim here must be checkable in a linked repo, its README/docs, or git history.
+
 const profile = {
   name: "Ajay Garg",
-  heroHeading: "I build backend systems\nand AI architectures.",
-  heroSubheading: "Computer Science Student focused on AI Systems, Backend Engineering, and Cloud Infrastructure.",
-  typewriterPhrases: [
-    "Building Agentic AI Systems",
-    "Designing Scalable Backends",
-    "Engineering SaaS Products",
-    "Creating Intelligent Applications",
-  ],
+  siteUrl: "https://www.agdev10.online",
+  location: "Delhi, India",
+
+  hero: {
+    status: "Available to join immediately · NCR / Hybrid / Remote",
+    headline: "I build backend services, cloud pipelines and AI agents.",
+    accent: "backend services",
+    subheading:
+      "Open to SDE-1, software engineering intern (6 months), and AI developer / AI engineer roles. B.Tech CSE (Cloud Computing), SRMIST, Class of 2027.",
+  },
 
   about: {
-    narrative: `I started where most CS students do — building full-stack CRUD apps to learn how the pieces fit together. But I got more interested in what happens behind the UI: how authentication actually works at the token level, how payment flows handle failure states, how WebSocket connections scale under load.
+    narrative: `I'm a B.Tech CSE (Cloud Computing) student at SRM Institute of Science and Technology, and I lean towards the backend: APIs, auth, data stores, and the infrastructure that runs them.
 
-That led me deeper into backend architecture — building real auth systems with hash-stored single-use refresh tokens, integrating Agora SDK for real-time video, and deploying services across Railway and Vercel with proper CI/CD pipelines.
+My early projects were full-stack apps where I spent most of my time on the server side. In Digital Vault, refresh tokens are stored only as SHA-256 hashes and revoked the moment they are used, and login supports TOTP two-factor auth.
 
-More recently, I've been building agentic AI systems — not wrappers around ChatGPT, but actual multi-service architectures where an Orchestrator routes tasks to specialized Planner, Memory, and Executor services, each running in its own Docker container. The system (VEDA) uses LLM-driven task decomposition, vector-based memory retrieval via FAISS, and automated deployment through GitHub Actions.
+Since then most of my work has been AI agents with guardrails around them. VEDA splits an agent into Orchestrator, Planner, Memory (FAISS) and Executor services, each in its own Docker container. In hackathons I've built agents that propose payments but cannot execute them without passing a deterministic policy engine (TapRemit), coordinate through a graph database without application locks (Hindsight), and roll back their own bad deploys (GreenGate).
 
-I also co-authored research on self-healing cloud infrastructure, combining autoencoder-based anomaly detection with automated remediation — the kind of system that detects a memory leak before the on-call engineer's pager fires.`,
+I also co-authored a paper on self-healing cloud infrastructure using autoencoder-based anomaly detection with automated remediation. It has been submitted and is not yet published.`,
 
     timeline: [
       {
         year: "2023",
-        title: "Started Learning Development",
-        description: "Started B.Tech with a focus on distributed systems and cloud architecture. SRMIST CGPA 8.58.",
+        title: "Started B.Tech CSE (Cloud Computing)",
+        description: "SRM Institute of Science and Technology. Current CGPA 8.58.",
       },
       {
-        year: "2024",
-        title: "Built Full-Stack Applications",
-        description: "Built production-style systems: JWT auth with hashed single-use refresh tokens, real-time video (Agora SDK), PostgreSQL schemas.",
+        year: "Dec 2025",
+        title: "Email AI Agent",
+        description: "FastAPI + Gmail API (OAuth 2.0) + LangChain: summarises and tags unread email and drafts replies for review.",
       },
       {
-        year: "2025",
-        title: "Built AI-Powered Systems",
-        description: "Built an autonomous email agent using LangChain + Gmail API (OAuth 2.0) — summarization, categorization, and reply drafting without human intervention.",
+        year: "Apr 2026",
+        title: "Digital Vault & self-healing cloud prototype",
+        description: "Hashed single-use refresh tokens and TOTP 2FA; autoencoder-based anomaly detection prototype for the research paper.",
       },
       {
-        year: "2026",
-        title: "Building Agentic AI Platforms",
-        description: "Designed VEDA, a microservice-based agentic AI system: Orchestrator, Planner, Memory (FAISS), Executor — each containerized, deployed with CI/CD.",
+        year: "May 2026",
+        title: "VEDA",
+        description: "Agentic AI system split into Orchestrator, Planner, Memory (FAISS) and Executor services, each in its own Docker container.",
+      },
+      {
+        year: "Sep–Nov 2026",
+        title: "Hackathons & NKRA internship",
+        description: "TapRemit, Hindsight, RXCLEAR, Threshold and GreenGate; built the “Ask NKRA” assistant as an intern at NKRA.",
       },
     ],
 
-    currentFocus: [
-      "Agentic AI",
-      "LLM Workflows",
-      "System Design",
-      "Distributed Systems",
-      "Cloud-Native",
-    ],
+    currentFocus: ["Agentic AI", "LLM workflows", "Backend APIs", "AWS serverless", "CI/CD"],
   },
 
+  experience: [
+    {
+      role: "Associate Software Developer (Intern)",
+      org: "NKRA",
+      period: "17 Oct 2026 – 10 Nov 2026",
+      points: [
+        "Built the “Ask NKRA” AI chat assistant for the NKRA website, in JavaScript.",
+      ],
+      tech: ["JavaScript", "LLM integration"],
+    },
+  ],
+
+  research: [
+    {
+      title: "Self-healing cloud infrastructure with autoencoder-based anomaly detection and automated remediation",
+      status: "Submitted, not yet published",
+      role: "Co-author",
+      summary:
+        "An autoencoder learns normal behaviour from Prometheus metrics; anomalies trigger automated remediation such as restarting the degraded container.",
+      code: "https://github.com/ajayg10/self-healing-cloud",
+    },
+  ],
+
+  // Featured first, in order of how much verifiable evidence the repo carries.
   projects: [
     {
-      title: "VEDA",
-      tagline: "Agentic AI Operating System",
-      description: "A multi-service agentic AI system where an Orchestrator decomposes user requests and routes them to specialized services. The Planner uses LLM-driven task decomposition, Memory stores and retrieves context via FAISS vector embeddings, and the Executor handles tool calls and API interactions. Each service runs in its own Docker container.",
-      problem: "Traditional software runs on rigid, predefined logic paths, making it unable to adapt to open-ended, complex user tasks or self-correct when API/tool executions fail.",
-      solution: "Designed a microservices-based agentic operating system where requests are dynamically planned, memory-recalled, and executed through autonomous agents.",
-      challenge: "Managing multi-step tasks.",
-      remediation: "Dependency-aware task graph using topological sorting.",
-      tech: ["FastAPI", "Docker", "FAISS", "Nginx", "GitHub Actions", "LLMs"],
-      github: "https://github.com/ajayg10",
+      title: "TapRemit",
+      tagline: "Guardrailed AI payments on Monad testnet",
+      context: "Team project · Monad Metropolis hackathon",
+      problem: "Giving an AI agent direct access to a wallet risks prompt injection, wrong recipients and drained funds.",
+      description:
+        "The LLM only proposes a transfer. A deterministic policy engine (per-transaction and 24-hour limits, first-time-recipient confirmation), SHA-256 proposal binding and a hash-chained audit log enforced by SQLite triggers gate every send before it settles on Monad testnet.",
+      evidence: "87 tests across 7 backend test files (Vitest + Supertest); README links a finalized testnet transfer.",
+      tech: ["TypeScript", "Node.js", "Express", "SQLite", "viem", "Next.js", "Vitest"],
+      github: "https://github.com/ajayg10/tapremit",
       featured: true,
-      impact: "92% autonomous task success rate across multi-step digital workflows.",
-      architectureFlow: ["User", "Planner", "Memory", "Executor", "LLM"],
+      architectureFlow: ["Prompt", "Policy engine", "Proposal hash", "Audit chain", "Monad"],
     },
     {
-      title: "Email AI Agent",
-      tagline: "Autonomous Email Processing",
-      description: "An AI agent that connects to Gmail via OAuth 2.0, reads incoming emails, and autonomously summarizes content, categorizes by intent (urgent / informational / action-required), and drafts contextual replies. Uses LangChain's agent framework for multi-step reasoning over email threads.",
-      problem: "Manual email management, categorization, and reply drafting consume hours of developer and operations time daily.",
-      solution: "Integrated Gmail APIs, OAuth authentication, LLM-powered email summarization and automated replies.",
-      challenge: "Handling rate limits and context window token limits on large email threads.",
-      remediation: "Implemented incremental context pruning and queue-based batching.",
-      tech: ["FastAPI", "LangChain", "Gmail API", "OAuth", "Python"],
-      github: "https://github.com/ajayg10",
+      title: "Hindsight",
+      tagline: "SRE agent crew on a live operational graph",
+      context: "Team project · hackathon",
+      problem: "Incident agents that rely on text search recommend runbooks for infrastructure that has since been migrated.",
+      description:
+        "A crew of incident-response agents that reads a FalkorDB operational graph, so a runbook invalidated by a later architecture change is refused. Workers claim tasks through an atomic Cypher state machine instead of application locks.",
+      evidence: "5 agent workers; race harness at 20–32 concurrent threads recorded 0 double-claimed tasks (docs/VERIFIED.md).",
+      tech: ["Python", "FastAPI", "FalkorDB", "Cypher", "MCP", "Docker Compose", "Caddy"],
+      github: "https://github.com/ajayg10/hindsight",
+      live: "https://hindsight.agdev10.online",
       featured: true,
-      impact: "Fully automated reply generation and intent classification for email boxes.",
-      architectureFlow: ["Gmail", "OAuth", "AI Processing", "Generated Response"],
+      architectureFlow: ["Alerts", "Sentinel", "Investigators", "Graph", "Responder"],
+    },
+    {
+      title: "GreenGate",
+      tagline: "Carbon-aware CI/CD with GitLab Duo agents",
+      context: "GitLab “Life After Code” hackathon",
+      problem: "CI pipelines waste runner time, and deploys ignore how carbon-intensive the grid is at that moment.",
+      description:
+        "Two GitLab Duo flows: greengate-optimizer measures each pipeline's carbon (SCI) and opens MRs that remove CI waste; phoenix-responder handles failed deploys. Releases go through an AWS Lambda canary at 10% traffic with automatic rollback.",
+      evidence: "Measured −23.1% gCO2e and −23.2% runner minutes per pipeline after the bot MR, plus one real automatic canary rollback (docs/RESULTS.md); 56 pytest tests.",
+      tech: ["Python", "GitLab CI", "GitLab Duo", "AWS Lambda", "EventBridge", "S3", "DynamoDB", "OIDC"],
+      github: "https://github.com/ajayg10/greengate",
+      live: "https://main.d28t6c9al9r6ob.amplifyapp.com/",
+      liveLabel: "Carbon dashboard",
+      featured: true,
+      architectureFlow: ["Pipeline", "SCI meter", "Duo optimizer", "Canary 10%", "Rollback"],
+    },
+    {
+      title: "VEDA",
+      tagline: "Agentic AI system as separate services",
+      context: "Personal project · since May 2026",
+      problem: "Turning a natural-language goal into a multi-step workflow that runs steps in the right order.",
+      description:
+        "An Orchestrator routes requests to a Planner (LLM via Groq or Ollama), a Memory service (FAISS vector search) and an Executor that runs steps in dependency order using a topological sort. Each service is a FastAPI app in its own Docker container behind Nginx.",
+      evidence: "docker-compose.yml defines the 4 services plus Nginx, Prometheus and Grafana; 26 test files; GitHub Actions CI.",
+      tech: ["Python", "FastAPI", "FAISS", "Docker", "Nginx", "Prometheus", "GitHub Actions"],
+      github: "https://github.com/ajayg10/VEDA",
+      featured: true,
+      architectureFlow: ["Orchestrator", "Planner", "Memory", "Executor"],
     },
     {
       title: "Digital Vault",
-      tagline: "Secure Data Management Platform",
-      description: "A full-stack platform with a security-first auth system: JWT access tokens paired with single-use, hash-stored refresh tokens — meaning even if the database is compromised, stolen refresh tokens can't be replayed. Includes real-time video rooms via Agora SDK for collaborative sessions.",
-      problem: "Modern web applications suffer from token hijacking and replay attacks if access/refresh tokens are stored insecurely or not rotated.",
-      solution: "Implemented JWT authentication, PostgreSQL persistence, real-time communication, and cloud deployment.",
-      challenge: "Stolen refresh token replay attacks.",
-      remediation: "Single-use, hash-stored refresh tokens with rotating invalidation.",
-      tech: ["React", "FastAPI", "PostgreSQL", "JWT", "Agora", "Railway", "Vercel"],
-      github: "https://github.com/ajayg10",
-      featured: true,
-      impact: "Secured file storage and meeting rooms, preventing unauthorized access even in database leaks.",
-      architectureFlow: ["Authentication", "Storage", "Meetings", "Collaboration"],
-    },
-    {
-      title: "Celestia",
-      tagline: "Personalized Content & Paywall Engine",
-      description: "A rule-based engine and AI tier that curates customized outputs based on user profile inputs, behind a payment gateway.",
-      problem: "Educators and creators struggle to deliver dynamic learning tracks and restrict premium access without heavy custom development.",
-      solution: "Developed a rule-based engine and AI tier that curates customized outputs based on user profile inputs, behind a payment gateway.",
-      challenge: "Integrating real-time paywalls with structured outputs.",
-      remediation: "Dynamic middleware validation linked with Razorpay callback webhooks.",
-      tech: ["React", "FastAPI", "OpenAI", "Razorpay"],
-      github: "https://github.com/ajayg10",
-      featured: true,
-      impact: "Automated content generation and paywall restriction for personalized learning paths.",
-      architectureFlow: ["User Input", "Rule Engine", "AI Layer", "Personalized Output"],
-    },
-    {
-      title: "Crisp",
-      tagline: "High-Performance API Middleware",
-      description: "A high-throughput API gateway and database connection orchestration layer to handle authentication, routing, and database queries securely.",
-      problem: "Direct API-to-database calls experience connection exhaustion and latency spikes under heavy concurrent request spikes.",
-      solution: "Engineered a high-throughput API gateway and database connection orchestration layer.",
-      challenge: "High connection latency under burst loads.",
-      remediation: "Implemented PostgreSQL connection pooling with Express routing middleware.",
-      tech: ["Node.js", "Express", "PostgreSQL"],
-      github: "https://github.com/ajayg10",
+      tagline: "File vault with hardened auth",
+      context: "Personal project",
+      problem: "A stolen refresh token or database dump should not let an attacker keep a session alive.",
+      description:
+        "FastAPI + PostgreSQL + React vault for files, projects and meetings. Refresh tokens are stored only as SHA-256 hashes and revoked on use; login supports TOTP 2FA with hashed backup codes; meetings use the Agora SDK.",
+      evidence: "Token hashing, rotation and backup-code logic in backend/app/core/security.py.",
+      tech: ["FastAPI", "PostgreSQL", "SQLAlchemy", "React", "JWT", "PyOTP", "Agora"],
+      github: "https://github.com/ajayg10/Digi_vault",
+      live: "https://digi-vault-three.vercel.app/",
       featured: false,
-      impact: "Stable sub-50ms API response times under mock load tests.",
-      architectureFlow: ["Client App", "Auth Layer", "Database Layer", "API Layer"],
+      architectureFlow: ["React", "FastAPI", "JWT + TOTP", "PostgreSQL"],
     },
     {
-      title: "Self-Healing Cloud Infrastructure",
-      tagline: "Research — Anomaly Detection & Auto-Remediation",
-      description: "A research project building infrastructure that detects anomalies before they cause outages. An autoencoder neural network learns normal system behavior from Prometheus metrics, flags deviations, and triggers automated remediation actions.",
-      problem: "Production cloud setups experience outages due to delayed alert response times by human on-call engineers.",
-      solution: "Co-authored research on autoencoder-based anomaly detection + automated remediation for cloud systems.",
-      challenge: "High false-positive alert rates in noisy cloud metrics.",
-      remediation: "Reconstruction error threshold optimization based on autoencoder validation loss.",
-      tech: ["Prometheus", "Grafana", "Docker", "Python", "Autoencoder", "Bash"],
-      github: "https://github.com/ajayg10",
+      title: "Email AI Agent",
+      tagline: "Gmail summaries and draft replies",
+      context: "Personal project",
+      problem: "Triaging a full inbox takes time.",
+      description:
+        "Signs in with Google OAuth 2.0, fetches unread primary-inbox email through the Gmail API, asks an LLM (LangChain + OpenAI) for a three-line summary and a tag as JSON, and drafts a reply for the user to review. It does not send email on its own.",
+      evidence: "Summarise/tag/reply logic in email_service.py, with a fallback when the LLM returns invalid JSON.",
+      tech: ["Python", "FastAPI", "Gmail API", "OAuth 2.0", "LangChain", "OpenAI", "SQLite", "React"],
+      github: "https://github.com/ajayg10/ai_email_agent",
       featured: false,
-      impact: "Automatically restarts degraded containers and logs incidents before failures scale.",
-      architectureFlow: ["Prometheus Metrics", "Autoencoder Analysis", "Alert Trigger", "Auto-Remediation Script"],
+      architectureFlow: ["Gmail", "OAuth", "LLM summary + tag", "Draft reply"],
+    },
+    {
+      title: "Self-Healing Cloud (research prototype)",
+      tagline: "Code behind the submitted paper",
+      context: "Research prototype",
+      problem: "Outages get worse while waiting for a human to notice degraded metrics.",
+      description:
+        "Docker Compose stack with a sample app, Prometheus and Grafana. A PyTorch autoencoder is trained on healthy-baseline metrics; a detector flags anomalies and a healer restarts the target container with a cooldown and a post-restart health check.",
+      evidence: "Prototype code only: the repo has no README or published results yet.",
+      tech: ["Python", "PyTorch", "Prometheus", "Grafana", "Docker"],
+      github: "https://github.com/ajayg10/self-healing-cloud",
+      featured: false,
+      architectureFlow: ["Prometheus", "Autoencoder", "Detector", "Healer"],
+    },
+  ],
+
+  hackathons: [
+    {
+      name: "GreenGate",
+      event: "GitLab “Life After Code” Transcend hackathon",
+      summary: "Carbon-aware CI/CD: GitLab Duo flows (greengate-optimizer and phoenix-responder), AWS Lambda canary deploys with automatic rollback.",
+      github: "https://github.com/ajayg10/greengate",
+      live: "https://main.d28t6c9al9r6ob.amplifyapp.com/",
+    },
+    {
+      name: "RXCLEAR",
+      event: "Hackathon · team project",
+      summary: "Serverless prescription decoder on AWS: Bedrock (Claude Haiku) extracts medicines and timings from a photo; DynamoDB, S3 presigned uploads, Amplify hosting.",
+      github: "https://github.com/ajayg10/rxclear",
+      live: "https://main.d2mcosl2ts0tqi.amplifyapp.com/",
+    },
+    {
+      name: "Threshold",
+      event: "Amazon Developer Hackathon · Ring track",
+      summary: "Doorbell interpreter for residents who are deaf or don't share the visitor's language: Transcribe → Bedrock → Polly, and it never unlocks anything. 119 pytest tests.",
+      github: "https://github.com/ajayg10/Threshold",
     },
   ],
 
   skills: {
-    "Backend Engineering": [
-      "FastAPI", "Node.js", "Express.js", "REST APIs", "Authentication", "PostgreSQL", "MySQL", "MongoDB",
+    "Languages": ["Python", "TypeScript", "JavaScript", "SQL", "Cypher"],
+    "Backend & Data": [
+      "FastAPI", "Node.js", "Express", "REST APIs", "JWT / OAuth 2.0", "PostgreSQL", "SQLite", "SQLAlchemy", "DynamoDB", "FalkorDB",
     ],
-    "AI Systems": [
-      "LLM Integration", "LangChain", "Prompt Engineering", "RAG", "Embeddings", "Vector Databases", "Agentic AI",
+    "AI & Agents": [
+      "LangChain", "OpenAI API", "Amazon Bedrock", "Groq / Ollama", "FAISS", "PyTorch", "MCP", "GitLab Duo Agent Platform",
     ],
     "Cloud & DevOps": [
-      "Docker", "Nginx", "GitHub Actions", "Linux", "AWS", "Vercel", "Railway",
+      "Docker", "Docker Compose", "Nginx", "GitHub Actions", "GitLab CI", "AWS Lambda", "AWS S3", "AWS Amplify", "Prometheus", "Grafana", "Vercel",
     ],
-    "Programming": [
-      "Python", "Java", "JavaScript", "SQL",
-    ],
-  },
-
-  experience: {
-    systemFlow: [
-      { label: 'User Request',    log: 'POST /api/v1/veda HTTP/2',          metric: 'Payload: 2.1kb' },
-      { label: 'API Gateway',     log: 'CORS & Token check: OK',             metric: 'Rate: 14/100s' },
-      { label: 'Backend Service', log: 'Routing to task decomposition',     metric: 'Event loop: 0.8ms' },
-      { label: 'Database / AI',   log: 'FAISS vector search + PG query',   metric: 'Query: 4ms' },
-      { label: 'Response',        log: 'HTTP 200 OK → client',              metric: 'Total: 48ms' },
-    ],
-    highlights: [
-      { text: 'Built 5+ production-style applications',          detail: 'Multi-service architectures, real-time video modules, and email agents from scratch.' },
-      { text: 'JWT Authentication, OAuth 2.0 & RBAC',            detail: 'Token rotation with hash-stored single-use refresh tokens to secure access points.' },
-      { text: 'Microservices Architecture',                       detail: 'Isolated service networks via Docker Compose with reverse-proxying via Nginx.' },
-      { text: 'LLMs integrated into real-world workflows',        detail: 'LangChain pipelines, FAISS vector indexing, and autonomous agent loops.' },
-      { text: 'FastAPI, React, PostgreSQL & Docker',              detail: 'Full-stack building with database pooling, type-safe API routers, and containerization.' },
-      { text: 'Cloud-hosted CI/CD deployed systems',              detail: 'Automated pipelines via GitHub Actions deployed to Railway, Vercel, and VPS.' },
-    ],
+    "Frontend & Testing": ["React", "Next.js", "Vite", "Tailwind CSS", "pytest", "Vitest"],
   },
 
   education: {
@@ -179,14 +222,16 @@ I also co-authored research on self-healing cloud infrastructure, combining auto
 
   social: {
     github: "https://github.com/ajayg10",
-    linkedin: "https://linkedin.com/in/ajayg10",
-    leetcode: "https://leetcode.com/u/Ajay-10",
+    linkedin: "https://www.linkedin.com/in/ajayg10",
+    leetcode: "https://leetcode.com/u/Ajay-10/",
     email: "ajaygarg200r@gmail.com",
+    phone: "+91 9821617252",
   },
 
+  availability: "Currently available: immediate joiner · 6 months · NCR, hybrid or remote",
+
   githubUsername: "ajayg10",
-  totalRepos: 21,
-  resumeUrl: "/images/Ajayy_Garg_Resume.pdf",
+  resumeUrl: "/Ajay_Garg_resume.pdf",
 };
 
 export default profile;

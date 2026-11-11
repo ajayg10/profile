@@ -14,11 +14,13 @@
   
   --text-primary: #1C1A19;
   --text-secondary: #4A4643;
-  --text-muted: #7E7771;
+  --text-muted: #6B6460;
   --text-faint: #B0A9A2;
   
   --accent: #C86D51;
   --accent-hover: #B85C40;
+  --accent-text: #A9533A; /* accent for text & buttons: >= 4.5:1 on all page backgrounds */
+  --accent-text-hover: #8F4530;
   --accent-light: #FDF2EE;
   --accent-border: rgba(200, 109, 81, 0.22);
   
@@ -74,9 +76,14 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--accent-text);
     outline-offset: 3px;
     border-radius: 4px;
+  }
+
+  /* Keep anchor targets clear of the fixed header */
+  section[id] {
+    scroll-margin-top: 5rem;
   }
 
   ::-webkit-scrollbar {
@@ -123,6 +130,10 @@
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.4s ease;
   }
   
+  a.floating-card:focus-visible {
+    border-color: var(--accent-text);
+  }
+
   .floating-card:hover {
     transform: translateY(-4px) scale(1.005);
     box-shadow: var(--shadow-3d-hover);
@@ -136,7 +147,7 @@
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-text);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -176,7 +187,7 @@
     transition: all 0.2s ease;
   }
   .tag:hover {
-    color: var(--accent);
+    color: var(--accent-text);
     border-color: var(--accent-border);
     background: var(--accent-light);
   }
@@ -192,7 +203,7 @@
     font-size: 0.9rem;
     font-weight: 700;
     color: #FFFFFF;
-    background: var(--accent);
+    background: var(--accent-text);
     border: 1px solid transparent;
     border-radius: var(--radius-full);
     cursor: pointer;
@@ -200,7 +211,7 @@
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .btn-primary:hover {
-    background: var(--accent-hover);
+    background: var(--accent-text-hover);
     transform: translateY(-2px);
     box-shadow: 0 8px 22px rgba(200, 109, 81, 0.4);
   }
@@ -282,4 +293,14 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  html {
+    scroll-behavior: auto;
+  }
+}
+/* Hide scrollbar on decorative horizontal flows (e.g. project architecture chips) */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
